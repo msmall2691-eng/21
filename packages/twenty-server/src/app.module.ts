@@ -94,18 +94,18 @@ export class AppModule {
       modules.push(
         ServeStaticModule.forRoot({
           rootPath: frontPath,
-          renderPath: '/*',
+          renderPath: '/{*path}',
           exclude: [
             '/graphql',
             '/metadata',
-            '/rest/(.*)',
+            '/rest/{*path}',
             '/healthz',
             '/client-config',
-            '/auth/(.*)',
-            '/webhooks/(.*)',
-            '/mcp/(.*)',
-            '/oauth/(.*)',
-            '/.well-known/(.*)',
+            '/auth/{*path}',
+            '/webhooks/{*path}',
+            '/mcp/{*path}',
+            '/oauth/{*path}',
+            '/.well-known/{*path}',
           ],
         }),
       );
