@@ -1,5 +1,6 @@
 [build]
 dockerfilePath = "packages/twenty-docker/twenty/Dockerfile"
+dockerTarget = "twenty"
 
 [deploy]
 healthcheckPath = "/healthz"
