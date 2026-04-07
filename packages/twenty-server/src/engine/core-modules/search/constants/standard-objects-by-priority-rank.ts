@@ -5,4 +5,9 @@ export const STANDARD_OBJECTS_BY_PRIORITY_RANK = {
   opportunity: 3,
   note: 2,
   task: 1,
+  property: 3,
+  jobVisit: 2,
+  serviceAgreement: 2,
+  quoteRequest: 2,
+  staffMember: 2,
 };

@@ -35,6 +35,11 @@ import { buildWorkflowRunStandardFlatFieldMetadatas } from 'src/engine/workspace
 import { buildWorkflowStandardFlatFieldMetadatas } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/compute-workflow-standard-flat-field-metadata.util';
 import { buildWorkflowVersionStandardFlatFieldMetadatas } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/compute-workflow-version-standard-flat-field-metadata.util';
 import { buildWorkspaceMemberStandardFlatFieldMetadatas } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/compute-workspace-member-standard-flat-field-metadata.util';
+import { buildPropertyStandardFlatFieldMetadatas } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/compute-property-standard-flat-field-metadata.util';
+import { buildServiceAgreementStandardFlatFieldMetadatas } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/compute-service-agreement-standard-flat-field-metadata.util';
+import { buildJobVisitStandardFlatFieldMetadatas } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/compute-job-visit-standard-flat-field-metadata.util';
+import { buildQuoteRequestStandardFlatFieldMetadatas } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/compute-quote-request-standard-flat-field-metadata.util';
+import { buildStaffMemberStandardFlatFieldMetadatas } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/compute-staff-member-standard-flat-field-metadata.util';
 import { type CreateStandardFieldArgs } from 'src/engine/workspace-manager/twenty-standard-application/utils/field-metadata/create-standard-field-flat-metadata.util';
 
 type StandardFieldBuilder<P extends AllStandardObjectName> = (
@@ -77,6 +82,12 @@ const STANDARD_FLAT_FIELD_METADATA_BUILDERS_BY_OBJECT_NAME = {
   workflowRun: buildWorkflowRunStandardFlatFieldMetadatas,
   workflowVersion: buildWorkflowVersionStandardFlatFieldMetadatas,
   workspaceMember: buildWorkspaceMemberStandardFlatFieldMetadatas,
+  // Maine Cleaning Co. custom objects
+  property: buildPropertyStandardFlatFieldMetadatas,
+  serviceAgreement: buildServiceAgreementStandardFlatFieldMetadatas,
+  jobVisit: buildJobVisitStandardFlatFieldMetadatas,
+  quoteRequest: buildQuoteRequestStandardFlatFieldMetadatas,
+  staffMember: buildStaffMemberStandardFlatFieldMetadatas,
 } satisfies {
   [P in AllStandardObjectName]: StandardFieldBuilder<P>;
 };

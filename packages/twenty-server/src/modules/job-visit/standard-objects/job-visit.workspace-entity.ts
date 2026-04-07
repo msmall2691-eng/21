@@ -1,0 +1,42 @@
+import {
+  FieldMetadataType,
+  type ActorMetadata,
+} from 'twenty-shared/types';
+
+import { type FieldTypeAndNameMetadata } from 'src/engine/workspace-manager/utils/get-ts-vector-column-expression.util';
+import { type EntityRelation } from 'src/engine/workspace-manager/workspace-migration/types/entity-relation.interface';
+import { type PropertyWorkspaceEntity } from 'src/modules/property/standard-objects/property.workspace-entity';
+import { type ServiceAgreementWorkspaceEntity } from 'src/modules/service-agreement/standard-objects/service-agreement.workspace-entity';
+import { type StaffMemberWorkspaceEntity } from 'src/modules/staff-member/standard-objects/staff-member.workspace-entity';
+
+const NAME_FIELD_NAME = 'name';
+
+export const SEARCH_FIELDS_FOR_JOB_VISIT: FieldTypeAndNameMetadata[] = [
+  { name: NAME_FIELD_NAME, type: FieldMetadataType.TEXT },
+];
+
+export class JobVisitWorkspaceEntity {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+
+  name: string | null;
+  scheduledDate: string | null;
+  completedDate: string | null;
+  status: string | null;
+  duration: number | null;
+  notes: string | null;
+  checklistCompleted: boolean;
+  position: number;
+  createdBy: ActorMetadata;
+  updatedBy: ActorMetadata;
+  searchVector: string;
+
+  property: EntityRelation<PropertyWorkspaceEntity> | null;
+  propertyId: string | null;
+  serviceAgreement: EntityRelation<ServiceAgreementWorkspaceEntity> | null;
+  serviceAgreementId: string | null;
+  staffMember: EntityRelation<StaffMemberWorkspaceEntity> | null;
+  staffMemberId: string | null;
+}

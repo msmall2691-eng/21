@@ -889,6 +889,149 @@ export const STANDARD_FLAT_OBJECT_METADATA_BUILDERS_BY_OBJECT_NAME = {
       twentyStandardApplicationId,
       now,
     }),
+  // Maine Cleaning Co. custom objects
+  property: ({
+    now,
+    workspaceId,
+    standardObjectMetadataRelatedEntityIds,
+    twentyStandardApplicationId,
+    dependencyFlatEntityMaps,
+  }: Omit<CreateStandardObjectArgs<'property'>, 'context' | 'objectName'>) =>
+    createStandardObjectFlatMetadata({
+      objectName: 'property',
+      dependencyFlatEntityMaps,
+      context: {
+        universalIdentifier: STANDARD_OBJECTS.property.universalIdentifier,
+        nameSingular: 'property',
+        namePlural: 'properties',
+        labelSingular: i18nLabel(msg`Property`),
+        labelPlural: i18nLabel(msg`Properties`),
+        description: i18nLabel(msg`A physical location we clean`),
+        icon: 'IconHome',
+        isSearchable: true,
+        labelIdentifierFieldMetadataName: 'name',
+      },
+      workspaceId,
+      standardObjectMetadataRelatedEntityIds,
+      twentyStandardApplicationId,
+      now,
+    }),
+  serviceAgreement: ({
+    now,
+    workspaceId,
+    standardObjectMetadataRelatedEntityIds,
+    twentyStandardApplicationId,
+    dependencyFlatEntityMaps,
+  }: Omit<
+    CreateStandardObjectArgs<'serviceAgreement'>,
+    'context' | 'objectName'
+  >) =>
+    createStandardObjectFlatMetadata({
+      objectName: 'serviceAgreement',
+      dependencyFlatEntityMaps,
+      context: {
+        universalIdentifier:
+          STANDARD_OBJECTS.serviceAgreement.universalIdentifier,
+        nameSingular: 'serviceAgreement',
+        namePlural: 'serviceAgreements',
+        labelSingular: i18nLabel(msg`Service Agreement`),
+        labelPlural: i18nLabel(msg`Service Agreements`),
+        description: i18nLabel(msg`A recurring cleaning contract`),
+        icon: 'IconFileDescription',
+        isSearchable: true,
+        labelIdentifierFieldMetadataName: 'name',
+      },
+      workspaceId,
+      standardObjectMetadataRelatedEntityIds,
+      twentyStandardApplicationId,
+      now,
+    }),
+  jobVisit: ({
+    now,
+    workspaceId,
+    standardObjectMetadataRelatedEntityIds,
+    twentyStandardApplicationId,
+    dependencyFlatEntityMaps,
+  }: Omit<CreateStandardObjectArgs<'jobVisit'>, 'context' | 'objectName'>) =>
+    createStandardObjectFlatMetadata({
+      objectName: 'jobVisit',
+      dependencyFlatEntityMaps,
+      context: {
+        universalIdentifier: STANDARD_OBJECTS.jobVisit.universalIdentifier,
+        nameSingular: 'jobVisit',
+        namePlural: 'jobVisits',
+        labelSingular: i18nLabel(msg`Job Visit`),
+        labelPlural: i18nLabel(msg`Job Visits`),
+        description: i18nLabel(msg`An individual cleaning visit`),
+        icon: 'IconCalendarEvent',
+        isSearchable: true,
+        labelIdentifierFieldMetadataName: 'name',
+      },
+      workspaceId,
+      standardObjectMetadataRelatedEntityIds,
+      twentyStandardApplicationId,
+      now,
+    }),
+  quoteRequest: ({
+    now,
+    workspaceId,
+    standardObjectMetadataRelatedEntityIds,
+    twentyStandardApplicationId,
+    dependencyFlatEntityMaps,
+  }: Omit<
+    CreateStandardObjectArgs<'quoteRequest'>,
+    'context' | 'objectName'
+  >) =>
+    createStandardObjectFlatMetadata({
+      objectName: 'quoteRequest',
+      dependencyFlatEntityMaps,
+      context: {
+        universalIdentifier:
+          STANDARD_OBJECTS.quoteRequest.universalIdentifier,
+        nameSingular: 'quoteRequest',
+        namePlural: 'quoteRequests',
+        labelSingular: i18nLabel(msg`Quote Request`),
+        labelPlural: i18nLabel(msg`Quote Requests`),
+        description: i18nLabel(msg`An intake-to-quote pipeline entry`),
+        icon: 'IconFileInvoice',
+        isSearchable: true,
+        labelIdentifierFieldMetadataName: 'name',
+      },
+      workspaceId,
+      standardObjectMetadataRelatedEntityIds,
+      twentyStandardApplicationId,
+      now,
+    }),
+  staffMember: ({
+    now,
+    workspaceId,
+    standardObjectMetadataRelatedEntityIds,
+    twentyStandardApplicationId,
+    dependencyFlatEntityMaps,
+  }: Omit<
+    CreateStandardObjectArgs<'staffMember'>,
+    'context' | 'objectName'
+  >) =>
+    createStandardObjectFlatMetadata({
+      objectName: 'staffMember',
+      dependencyFlatEntityMaps,
+      context: {
+        universalIdentifier:
+          STANDARD_OBJECTS.staffMember.universalIdentifier,
+        nameSingular: 'staffMember',
+        namePlural: 'staffMembers',
+        labelSingular: i18nLabel(msg`Staff Member`),
+        labelPlural: i18nLabel(msg`Staff Members`),
+        description: i18nLabel(msg`A cleaner synced from Connecteam`),
+        icon: 'IconUserCheck',
+        isSearchable: true,
+        labelIdentifierFieldMetadataName: 'name',
+      },
+      workspaceId,
+      standardObjectMetadataRelatedEntityIds,
+      twentyStandardApplicationId,
+      now,
+    }),
 } satisfies {
   [P in AllStandardObjectName]: (
     args: Omit<CreateStandardObjectArgs<P>, 'context' | 'objectName'>,
