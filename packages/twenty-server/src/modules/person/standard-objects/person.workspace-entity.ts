@@ -18,6 +18,8 @@ import { type FavoriteWorkspaceEntity } from 'src/modules/favorite/standard-obje
 import { type MessageParticipantWorkspaceEntity } from 'src/modules/messaging/common/standard-objects/message-participant.workspace-entity';
 import { type NoteTargetWorkspaceEntity } from 'src/modules/note/standard-objects/note-target.workspace-entity';
 import { type OpportunityWorkspaceEntity } from 'src/modules/opportunity/standard-objects/opportunity.workspace-entity';
+import { type PropertyWorkspaceEntity } from 'src/modules/property/standard-objects/property.workspace-entity';
+import { type QuoteRequestWorkspaceEntity } from 'src/modules/quote-request/standard-objects/quote-request.workspace-entity';
 import { type TaskTargetWorkspaceEntity } from 'src/modules/task/standard-objects/task-target.workspace-entity';
 import { type TimelineActivityWorkspaceEntity } from 'src/modules/timeline/standard-objects/timeline-activity.workspace-entity';
 
@@ -61,5 +63,7 @@ export class PersonWorkspaceEntity extends BaseWorkspaceEntity {
     CalendarEventParticipantWorkspaceEntity[]
   >;
   timelineActivities: EntityRelation<TimelineActivityWorkspaceEntity[]>;
+  properties: EntityRelation<PropertyWorkspaceEntity[]>;
+  quoteRequests: EntityRelation<QuoteRequestWorkspaceEntity[]>;
   searchVector: string;
 }

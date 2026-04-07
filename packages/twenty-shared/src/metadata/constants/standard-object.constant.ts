@@ -716,6 +716,9 @@ export const STANDARD_OBJECTS = {
       searchVector: {
         universalIdentifier: '85c71601-72f9-4b7b-b343-d46100b2c74d',
       },
+      properties: {
+        universalIdentifier: '30303030-bb03-58a3-1d88-e9232dea9732',
+      },
     },
     indexes: {
       accountOwnerIdIndex: {
@@ -2387,6 +2390,12 @@ export const STANDARD_OBJECTS = {
       searchVector: {
         universalIdentifier: '57d1d7ad-fa10-44fc-82f3-ad0959ec2534',
       },
+      properties: {
+        universalIdentifier: '30303030-32ab-3039-f798-aa361c05e047',
+      },
+      quoteRequests: {
+        universalIdentifier: '30303030-9351-cc1e-f418-8158ae641047',
+      },
     },
     indexes: {
       companyIdIndex: {
@@ -3564,6 +3573,12 @@ export const STANDARD_OBJECTS = {
       searchVector: {
         universalIdentifier: '30303030-0fd5-f78a-5aa9-4b0e9be47832',
       },
+      company: {
+        universalIdentifier: '30303030-5976-ad6d-4efe-5cc65d62eb33',
+      },
+      person: {
+        universalIdentifier: '30303030-3523-5107-b950-219618e6d3f5',
+      },
       serviceAgreements: {
         universalIdentifier: '30303030-2a2e-8473-3495-08772e51da0b',
       },
@@ -3591,6 +3606,9 @@ export const STANDARD_OBJECTS = {
           },
           propertyType: {
             universalIdentifier: '30303030-af01-4a01-8a01-c0aba11cf003',
+          },
+          company: {
+            universalIdentifier: '30303030-af01-4a01-8a01-c0aba11cf004',
           },
           isActive: {
             universalIdentifier: '30303030-af01-4a01-8a01-c0aba11cf005',
@@ -3811,6 +3829,9 @@ export const STANDARD_OBJECTS = {
       },
       property: {
         universalIdentifier: '30303030-0a7f-026d-e706-25198cefa01d',
+      },
+      person: {
+        universalIdentifier: '30303030-d5b9-cd02-64ba-247ef72ee0f2',
       },
     },
     indexes: {

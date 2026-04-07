@@ -448,4 +448,28 @@ export const buildQuoteRequestStandardFlatFieldMetadatas = ({
     twentyStandardApplicationId,
     now,
   }),
+  person: createStandardRelationFieldFlatMetadata({
+    objectName,
+    workspaceId,
+    context: {
+      type: FieldMetadataType.RELATION,
+      morphId: null,
+      fieldName: 'person',
+      label: i18nLabel(msg`Contact`),
+      description: i18nLabel(msg`Person who requested the quote`),
+      icon: 'IconUser',
+      isNullable: true,
+      targetObjectName: 'person',
+      targetFieldName: 'quoteRequests',
+      settings: {
+        relationType: RelationType.MANY_TO_ONE,
+        onDelete: RelationOnDeleteAction.SET_NULL,
+        joinColumnName: 'personId',
+      },
+    },
+    standardObjectMetadataRelatedEntityIds,
+    dependencyFlatEntityMaps,
+    twentyStandardApplicationId,
+    now,
+  }),
 });

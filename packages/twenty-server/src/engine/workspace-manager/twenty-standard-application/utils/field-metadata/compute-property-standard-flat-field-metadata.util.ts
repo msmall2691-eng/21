@@ -3,6 +3,7 @@ import { i18nLabel } from 'src/engine/workspace-manager/twenty-standard-applicat
 import {
   DateDisplayFormat,
   FieldMetadataType,
+  RelationOnDeleteAction,
   RelationType,
 } from 'twenty-shared/types';
 
@@ -371,6 +372,54 @@ export const buildPropertyStandardFlatFieldMetadatas = ({
   }),
 
   // Relations
+  company: createStandardRelationFieldFlatMetadata({
+    objectName,
+    workspaceId,
+    context: {
+      type: FieldMetadataType.RELATION,
+      morphId: null,
+      fieldName: 'company',
+      label: i18nLabel(msg`Company`),
+      description: i18nLabel(msg`Company that owns this property`),
+      icon: 'IconBuildingSkyscraper',
+      isNullable: true,
+      targetObjectName: 'company',
+      targetFieldName: 'properties',
+      settings: {
+        relationType: RelationType.MANY_TO_ONE,
+        onDelete: RelationOnDeleteAction.SET_NULL,
+        joinColumnName: 'companyId',
+      },
+    },
+    standardObjectMetadataRelatedEntityIds,
+    dependencyFlatEntityMaps,
+    twentyStandardApplicationId,
+    now,
+  }),
+  person: createStandardRelationFieldFlatMetadata({
+    objectName,
+    workspaceId,
+    context: {
+      type: FieldMetadataType.RELATION,
+      morphId: null,
+      fieldName: 'person',
+      label: i18nLabel(msg`Contact`),
+      description: i18nLabel(msg`Person associated with this property`),
+      icon: 'IconUser',
+      isNullable: true,
+      targetObjectName: 'person',
+      targetFieldName: 'properties',
+      settings: {
+        relationType: RelationType.MANY_TO_ONE,
+        onDelete: RelationOnDeleteAction.SET_NULL,
+        joinColumnName: 'personId',
+      },
+    },
+    standardObjectMetadataRelatedEntityIds,
+    dependencyFlatEntityMaps,
+    twentyStandardApplicationId,
+    now,
+  }),
   serviceAgreements: createStandardRelationFieldFlatMetadata({
     objectName,
     workspaceId,
