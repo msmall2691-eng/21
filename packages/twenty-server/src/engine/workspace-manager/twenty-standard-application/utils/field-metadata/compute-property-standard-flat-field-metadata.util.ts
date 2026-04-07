@@ -157,21 +157,21 @@ export const buildPropertyStandardFlatFieldMetadatas = ({
       defaultValue: "'RESIDENTIAL'",
       options: [
         {
-          id: '30303030-0001-0001-0001-000000000001',
+          id: '30303030-0001-4001-8001-000000000001',
           value: 'RESIDENTIAL',
           label: i18nLabel(msg`Residential`),
           position: 0,
           color: 'green',
         },
         {
-          id: '30303030-0001-0001-0001-000000000002',
+          id: '30303030-0001-4001-8001-000000000002',
           value: 'COMMERCIAL',
           label: i18nLabel(msg`Commercial`),
           position: 1,
           color: 'blue',
         },
         {
-          id: '30303030-0001-0001-0001-000000000003',
+          id: '30303030-0001-4001-8001-000000000003',
           value: 'STR',
           label: i18nLabel(msg`Short-Term Rental`),
           position: 2,

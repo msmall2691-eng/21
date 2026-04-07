@@ -166,21 +166,21 @@ export const buildStaffMemberStandardFlatFieldMetadatas = ({
       defaultValue: "'CLEANER'",
       options: [
         {
-          id: '30303030-0005-0001-0001-000000000001',
+          id: '30303030-0005-4001-8001-000000000001',
           value: 'LEAD',
           label: i18nLabel(msg`Lead`),
           position: 0,
           color: 'purple',
         },
         {
-          id: '30303030-0005-0001-0001-000000000002',
+          id: '30303030-0005-4001-8001-000000000002',
           value: 'CLEANER',
           label: i18nLabel(msg`Cleaner`),
           position: 1,
           color: 'green',
         },
         {
-          id: '30303030-0005-0001-0001-000000000003',
+          id: '30303030-0005-4001-8001-000000000003',
           value: 'SUPERVISOR',
           label: i18nLabel(msg`Supervisor`),
           position: 2,

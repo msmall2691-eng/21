@@ -167,28 +167,28 @@ export const buildJobVisitStandardFlatFieldMetadatas = ({
       defaultValue: "'SCHEDULED'",
       options: [
         {
-          id: '30303030-0003-0001-0001-000000000001',
+          id: '30303030-0003-4001-8001-000000000001',
           value: 'SCHEDULED',
           label: i18nLabel(msg`Scheduled`),
           position: 0,
           color: 'blue',
         },
         {
-          id: '30303030-0003-0001-0001-000000000002',
+          id: '30303030-0003-4001-8001-000000000002',
           value: 'IN_PROGRESS',
           label: i18nLabel(msg`In Progress`),
           position: 1,
           color: 'yellow',
         },
         {
-          id: '30303030-0003-0001-0001-000000000003',
+          id: '30303030-0003-4001-8001-000000000003',
           value: 'COMPLETED',
           label: i18nLabel(msg`Completed`),
           position: 2,
           color: 'green',
         },
         {
-          id: '30303030-0003-0001-0001-000000000004',
+          id: '30303030-0003-4001-8001-000000000004',
           value: 'CANCELLED',
           label: i18nLabel(msg`Cancelled`),
           position: 3,
