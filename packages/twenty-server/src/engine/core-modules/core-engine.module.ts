@@ -20,6 +20,7 @@ import { BillingWebhookModule } from 'src/engine/core-modules/billing-webhook/bi
 import { BillingModule } from 'src/engine/core-modules/billing/billing.module';
 import { CacheStorageModule } from 'src/engine/core-modules/cache-storage/cache-storage.module';
 import { TimelineCalendarEventModule } from 'src/engine/core-modules/calendar/timeline-calendar-event.module';
+import { CalendarWithCleaningsModule } from 'src/engine/core-modules/calendar/calendar-with-cleanings.module';
 import { CaptchaModule } from 'src/engine/core-modules/captcha/captcha.module';
 import { CloudflareModule } from 'src/engine/core-modules/cloudflare/cloudflare.module';
 import { CodeInterpreterModule } from 'src/engine/core-modules/code-interpreter/code-interpreter.module';
@@ -101,6 +102,7 @@ import { FileModule } from './file/file.module';
     AppTokenModule,
     TimelineMessagingModule,
     TimelineCalendarEventModule,
+    CalendarWithCleaningsModule,
     UserModule,
     WorkspaceModule,
     WorkspaceInvitationModule,
@@ -164,6 +166,7 @@ import { FileModule } from './file/file.module';
     FeatureFlagModule,
     TimelineMessagingModule,
     TimelineCalendarEventModule,
+    CalendarWithCleaningsModule,
     UserModule,
     WorkspaceModule,
     WorkspaceInvitationModule,
