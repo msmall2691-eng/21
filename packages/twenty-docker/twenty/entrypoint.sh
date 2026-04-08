@@ -40,5 +40,29 @@ register_background_jobs() {
 setup_and_migrate_db
 register_background_jobs
 
-# Continue with the original Docker command
-exec "$@"
+# Start the worker process in the background (handles email sync, calendar sync, etc.)
+echo "Starting background worker..."
+node dist/queue-worker/queue-worker &
+WORKER_PID=$!
+
+# Start the API server in the background
+"$@" &
+SERVER_PID=$!
+
+echo "Server PID: $SERVER_PID, Worker PID: $WORKER_PID"
+
+# Handle shutdown signals - stop both server and worker
+cleanup() {
+    echo "Shutting down server (PID: $SERVER_PID) and worker (PID: $WORKER_PID)..."
+    kill $SERVER_PID 2>/dev/null
+    kill $WORKER_PID 2>/dev/null
+    wait $SERVER_PID 2>/dev/null
+    wait $WORKER_PID 2>/dev/null
+    exit 0
+}
+trap cleanup SIGTERM SIGINT
+
+# Wait for both processes - if either exits, shut down gracefully
+wait $SERVER_PID $WORKER_PID
+echo "A process exited, shutting down..."
+cleanup
