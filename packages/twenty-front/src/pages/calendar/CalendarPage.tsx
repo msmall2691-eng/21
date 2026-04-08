@@ -1,8 +1,37 @@
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { GET_CALENDAR_WITH_CLEANINGS } from '@/calendar/graphql/queries/getCalendarWithCleanings';
 import { PageContainer } from '@/ui/layout/page/components/PageContainer';
 import { useState } from 'react';
-import styled from '@emotion/styled';
+import { styled } from '@linaria/react';
+
+type CalendarEvent = {
+  id: string;
+  title: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+  location: string | null;
+  description: string | null;
+  isCanceled: boolean;
+  isFullDay: boolean;
+  type: 'CALENDAR_EVENT' | 'CLEANING_JOB';
+  cleaningId?: string | null;
+  propertyId?: string | null;
+  propertyName?: string | null;
+  propertyAddress?: string | null;
+  guestNote?: string | null;
+  assignedStaffName?: string | null;
+  status?: string | null;
+  serviceAgreementId?: string | null;
+};
+
+type CalendarWithCleaningsResponse = {
+  getCalendarWithCleanings: {
+    events: CalendarEvent[];
+    totalCount: number;
+    startDate: string;
+    endDate: string;
+  };
+};
 
 const CalendarContainer = styled.div`
   display: flex;
@@ -45,7 +74,7 @@ const EventsContainer = styled.div`
   gap: 12px;
 `;
 
-const EventCard = styled.div<{ type: 'CALENDAR_EVENT' | 'CLEANING_JOB' }>`
+const EventCard = styled.div<{ type?: 'CALENDAR_EVENT' | 'CLEANING_JOB' }>`
   padding: 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -108,13 +137,16 @@ export const CalendarPage = () => {
   const [startDate, setStartDate] = useState(oneMonthAgo.toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(oneMonthLater.toISOString().split('T')[0]);
 
-  const { data, loading, error, refetch } = useQuery(GET_CALENDAR_WITH_CLEANINGS, {
-    variables: {
-      startDate: `${startDate}T00:00:00Z`,
-      endDate: `${endDate}T23:59:59Z`,
-      propertyIds: null,
+  const { data, loading, error, refetch } = useQuery<CalendarWithCleaningsResponse>(
+    GET_CALENDAR_WITH_CLEANINGS,
+    {
+      variables: {
+        startDate: `${startDate}T00:00:00Z`,
+        endDate: `${endDate}T23:59:59Z`,
+        propertyIds: null,
+      },
     },
-  });
+  );
 
   const handleDateChange = () => {
     refetch({
@@ -136,7 +168,7 @@ export const CalendarPage = () => {
             <Input
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
             />
           </div>
           <div>
@@ -144,7 +176,7 @@ export const CalendarPage = () => {
             <Input
               type="date"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
             />
           </div>
           <Button onClick={handleDateChange}>Load Events</Button>

@@ -1,8 +1,37 @@
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { GET_CALENDAR_WITH_CLEANINGS } from '@/calendar/graphql/queries/getCalendarWithCleanings';
 import { PageContainer } from '@/ui/layout/page/components/PageContainer';
 import { useState } from 'react';
-import styled from '@emotion/styled';
+import { styled } from '@linaria/react';
+
+type CalendarEvent = {
+  id: string;
+  title: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+  location: string | null;
+  description: string | null;
+  isCanceled: boolean;
+  isFullDay: boolean;
+  type: 'CALENDAR_EVENT' | 'CLEANING_JOB';
+  cleaningId?: string | null;
+  propertyId?: string | null;
+  propertyName?: string | null;
+  propertyAddress?: string | null;
+  guestNote?: string | null;
+  assignedStaffName?: string | null;
+  status?: string | null;
+  serviceAgreementId?: string | null;
+};
+
+type CalendarWithCleaningsResponse = {
+  getCalendarWithCleanings: {
+    events: CalendarEvent[];
+    totalCount: number;
+    startDate: string;
+    endDate: string;
+  };
+};
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -216,13 +245,16 @@ export const CleaningDashboardPage = () => {
   const [endDate] = useState(sevenDaysLater.toISOString().split('T')[0]);
   const [filterByStatus, setFilterByStatus] = useState<string | null>(null);
 
-  const { data, loading } = useQuery(GET_CALENDAR_WITH_CLEANINGS, {
-    variables: {
-      startDate: `${startDate}T00:00:00Z`,
-      endDate: `${endDate}T23:59:59Z`,
-      propertyIds: null,
+  const { data, loading } = useQuery<CalendarWithCleaningsResponse>(
+    GET_CALENDAR_WITH_CLEANINGS,
+    {
+      variables: {
+        startDate: `${startDate}T00:00:00Z`,
+        endDate: `${endDate}T23:59:59Z`,
+        propertyIds: null,
+      },
     },
-  });
+  );
 
   const events = data?.getCalendarWithCleanings?.events || [];
   const cleaningJobs = events.filter((e: any) => e.type === 'CLEANING_JOB');
@@ -335,14 +367,14 @@ export const CleaningDashboardPage = () => {
               ) : (
                 filteredCleanings
                   .sort(
-                    (a: any, b: any) =>
-                      new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
+                    (a: Record<string, any>, b: Record<string, any>) =>
+                      new Date(a.startsAt as string).getTime() - new Date(b.startsAt as string).getTime(),
                   )
-                  .map((cleaning: any) => (
+                  .map((cleaning: Record<string, any>) => (
                     <CleaningRow key={cleaning.id}>
                       <CleaningInfo>
                         <CleaningTime>
-                          {new Date(cleaning.startsAt).toLocaleString('en-US', {
+                          {new Date(cleaning.startsAt as string).toLocaleString('en-US', {
                             month: 'short',
                             day: 'numeric',
                             weekday: 'short',
@@ -354,7 +386,7 @@ export const CleaningDashboardPage = () => {
                           {cleaning.propertyName} • {cleaning.assignedStaffName || 'Unassigned'}
                         </CleaningDetails>
                       </CleaningInfo>
-                      <StatusBadge status={cleaning.status}>
+                      <StatusBadge status={cleaning.status as string}>
                         {cleaning.status || 'UNKNOWN'}
                       </StatusBadge>
                     </CleaningRow>
@@ -366,7 +398,7 @@ export const CleaningDashboardPage = () => {
             <Section>
               <SectionTitle>🏠 Properties with Cleanings</SectionTitle>
               <PropertiesGrid>
-                {filteredProperties.map((property) => (
+                {filteredProperties.map((property: Record<string, any>) => (
                   <PropertyCard key={property.id}>
                     <PropertyName>{property.name}</PropertyName>
                     <PropertyDetail>📍 {property.address || 'No address'}</PropertyDetail>
@@ -376,16 +408,16 @@ export const CleaningDashboardPage = () => {
                     </PropertyDetail>
 
                     <CleaningsList>
-                      {property.cleanings.map((cleaning: any) => (
+                      {property.cleanings.map((cleaning: Record<string, any>) => (
                         <CleaningItem key={cleaning.id}>
                           <span>
-                            {new Date(cleaning.startsAt).toLocaleDateString()}{' '}
-                            {new Date(cleaning.startsAt).toLocaleTimeString('en-US', {
+                            {new Date(cleaning.startsAt as string).toLocaleDateString()}{' '}
+                            {new Date(cleaning.startsAt as string).toLocaleTimeString('en-US', {
                               hour: '2-digit',
                               minute: '2-digit',
                             })}
                           </span>
-                          <StatusBadge status={cleaning.status}>
+                          <StatusBadge status={cleaning.status as string}>
                             {cleaning.status || 'UNKNOWN'}
                           </StatusBadge>
                         </CleaningItem>
