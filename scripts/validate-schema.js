@@ -1,13 +1,13 @@
 'use strict';
 
 // Validates that the required Twenty CRM objects and fields exist
-// for the iCal sync system.
+// for the Maine Clean iCal sync system.
 //
 // Usage: node scripts/validate-schema.js
 //
 // Env vars:
-//   TWENTY_API_URL  (default: https://21-production-0bd4.up.railway.app)
-//   TWENTY_API_TOKEN
+//   TWENTY_API_URL   (default: https://21-production-0bd4.up.railway.app)
+//   TWENTY_API_TOKEN (required)
 
 const TWENTY_API_URL = process.env.TWENTY_API_URL || 'https://21-production-0bd4.up.railway.app';
 const TWENTY_API_TOKEN = process.env.TWENTY_API_TOKEN;
@@ -42,8 +42,9 @@ async function metadataQuery(query) {
   return json.data;
 }
 
-async function getAllObjects() {
-  const data = await metadataQuery(`{
+async function getAllObjectsWithFields() {
+  // First get all object IDs
+  const objData = await metadataQuery(`{
     objects(paging: { first: 100 }) {
       edges {
         node {
@@ -51,27 +52,43 @@ async function getAllObjects() {
           nameSingular
           namePlural
           isCustom
-          fields(paging: { first: 200 }) {
-            edges {
-              node {
-                name
-                type
-                isCustom
-              }
-            }
-          }
         }
       }
     }
   }`);
 
-  return (data.objects?.edges || []).map((e) => ({
-    id: e.node.id,
-    nameSingular: e.node.nameSingular,
-    namePlural: e.node.namePlural,
-    isCustom: e.node.isCustom,
-    fields: (e.node.fields?.edges || []).map((f) => f.node),
-  }));
+  const objects = (objData.objects?.edges || []).map((e) => e.node);
+
+  // Then get fields for each relevant object by ID
+  const target = ['property', 'jobVisit', 'serviceAgreement', 'quoteRequest', 'staffMember'];
+  const result = [];
+
+  for (const obj of objects) {
+    if (target.includes(obj.nameSingular)) {
+      const fieldData = await metadataQuery(`{
+        object(id: "${obj.id}") {
+          nameSingular
+          fields(paging: { first: 100 }) {
+            edges {
+              node {
+                name
+                type
+              }
+            }
+          }
+        }
+      }`);
+
+      result.push({
+        ...obj,
+        fields: (fieldData.object?.fields?.edges || []).map((e) => e.node),
+      });
+    } else {
+      result.push({ ...obj, fields: [] });
+    }
+  }
+
+  return result;
 }
 
 function findObject(objects, name) {
@@ -87,19 +104,19 @@ function findField(obj, fieldName) {
 }
 
 async function main() {
-  console.log('=== Twenty CRM Schema Validator ===');
+  console.log('=== Twenty CRM Schema Validator (iCal Sync) ===');
   console.log(`API: ${TWENTY_API_URL}`);
   console.log('');
 
   let objects;
   try {
-    objects = await getAllObjects();
+    objects = await getAllObjectsWithFields();
   } catch (err) {
     console.error('Failed to fetch metadata:', err.message);
     process.exit(1);
   }
 
-  console.log(`Found ${objects.length} total objects (${objects.filter((o) => o.isCustom).length} custom)\n`);
+  console.log(`Found ${objects.length} total objects\n`);
 
   let passed = 0;
   let failed = 0;
@@ -118,13 +135,7 @@ async function main() {
   // --- Required objects ---
   console.log('--- Required Objects ---');
 
-  const requiredObjects = [
-    'property',
-    'quoteRequest',
-    'icalFeed',
-    'staffMember',
-  ];
-
+  const requiredObjects = ['property', 'jobVisit', 'serviceAgreement', 'quoteRequest', 'staffMember'];
   const foundObjects = {};
 
   for (const name of requiredObjects) {
@@ -133,53 +144,53 @@ async function main() {
     if (obj) foundObjects[name] = obj;
   }
 
-  // "visit" or "jobVisit" — either name is fine
-  const visitObj = findObject(objects, 'jobVisit') || findObject(objects, 'visit');
-  const visitName = visitObj ? visitObj.nameSingular : 'jobVisit/visit';
-  check(`Object: jobVisit OR visit (found: ${visitName})`, !!visitObj);
-  if (visitObj) foundObjects['visit'] = visitObj;
-
-  // "job" or "serviceAgreement" — either name is fine
-  const jobObj = findObject(objects, 'job') || findObject(objects, 'serviceAgreement');
-  const jobName = jobObj ? jobObj.nameSingular : 'job/serviceAgreement';
-  check(`Object: job OR serviceAgreement (found: ${jobName})`, !!jobObj);
-  if (jobObj) foundObjects['job'] = jobObj;
-
   console.log('');
 
-  // --- Required fields ---
-  console.log('--- Required Fields ---');
+  // --- Required fields for iCal sync ---
+  console.log('--- Required Fields (iCal Sync) ---');
 
-  const fieldChecks = {
-    property: ['name', 'propertyType', 'address'],
-    visit: ['status', 'scheduledAt'],
-    icalFeed: ['feedUrl', 'platform', 'syncStatus', 'lastSyncedAt'],
-  };
-
-  for (const [objName, fields] of Object.entries(fieldChecks)) {
-    const obj = foundObjects[objName];
-    if (!obj) {
-      for (const field of fields) {
-        check(`${objName}.${field} (object not found)`, false);
-      }
-      continue;
-    }
-
-    console.log(`  [${obj.nameSingular}]`);
-    for (const field of fields) {
-      check(`  ${obj.nameSingular}.${field}`, !!findField(obj, field));
+  // property fields needed by the sync
+  if (foundObjects.property) {
+    console.log('  [property]');
+    check('  property.name', !!findField(foundObjects.property, 'name'));
+    check('  property.propertyType', !!findField(foundObjects.property, 'propertyType'));
+    check('  property.isActive', !!findField(foundObjects.property, 'isActive'));
+    check('  property.icalSyncUrl', !!findField(foundObjects.property, 'icalSyncUrl'));
+    check('  property.address', !!findField(foundObjects.property, 'address'));
+    check('  property.serviceAgreements (relation)', !!findField(foundObjects.property, 'serviceAgreements'));
+  } else {
+    for (const f of ['name', 'propertyType', 'isActive', 'icalSyncUrl', 'address', 'serviceAgreements']) {
+      check(`  property.${f} (object not found)`, false);
     }
   }
 
-  // Check job/serviceAgreement fields
-  if (foundObjects['job']) {
-    const obj = foundObjects['job'];
-    console.log(`  [${obj.nameSingular}]`);
-    check(`  ${obj.nameSingular}.jobType`, !!findField(obj, 'jobType'));
-    check(`  ${obj.nameSingular}.status`, !!findField(obj, 'status'));
+  // serviceAgreement fields
+  if (foundObjects.serviceAgreement) {
+    console.log('  [serviceAgreement]');
+    check('  serviceAgreement.serviceType', !!findField(foundObjects.serviceAgreement, 'serviceType'));
+    check('  serviceAgreement.isActive', !!findField(foundObjects.serviceAgreement, 'isActive'));
+    check('  serviceAgreement.frequency', !!findField(foundObjects.serviceAgreement, 'frequency'));
+    check('  serviceAgreement.jobVisits (relation)', !!findField(foundObjects.serviceAgreement, 'jobVisits'));
   } else {
-    check('  job.jobType (object not found)', false);
-    check('  job.status (object not found)', false);
+    for (const f of ['serviceType', 'isActive', 'frequency', 'jobVisits']) {
+      check(`  serviceAgreement.${f} (object not found)`, false);
+    }
+  }
+
+  // jobVisit fields
+  if (foundObjects.jobVisit) {
+    console.log('  [jobVisit]');
+    check('  jobVisit.scheduledDate', !!findField(foundObjects.jobVisit, 'scheduledDate'));
+    check('  jobVisit.status', !!findField(foundObjects.jobVisit, 'status'));
+    check('  jobVisit.notes', !!findField(foundObjects.jobVisit, 'notes'));
+    check('  jobVisit.checklistCompleted', !!findField(foundObjects.jobVisit, 'checklistCompleted'));
+    check('  jobVisit.serviceAgreement (relation)', !!findField(foundObjects.jobVisit, 'serviceAgreement'));
+    check('  jobVisit.property (relation)', !!findField(foundObjects.jobVisit, 'property'));
+    check('  jobVisit.staffMember (relation)', !!findField(foundObjects.jobVisit, 'staffMember'));
+  } else {
+    for (const f of ['scheduledDate', 'status', 'notes', 'checklistCompleted', 'serviceAgreement', 'property', 'staffMember']) {
+      check(`  jobVisit.${f} (object not found)`, false);
+    }
   }
 
   console.log('');
@@ -191,30 +202,10 @@ async function main() {
   console.log('');
 
   if (failed === 0) {
-    console.log('PASSED - All required objects and fields exist.');
+    console.log('PASSED - All required objects and fields exist for iCal sync.');
   } else {
     console.log('FAILED - Some objects or fields are missing.');
-    console.log('');
-    console.log('To create missing objects, either:');
-    console.log('  1. Run the setup script: bash scripts/setup-maine-clean-data-model.sh');
-    console.log('  2. Create them manually in Twenty Settings > Data Model');
-    console.log('');
-    console.log('Missing "icalFeed" object? You need to create it with fields:');
-    console.log('  - feedUrl (TEXT): the .ics URL');
-    console.log('  - platform (SELECT): Airbnb, VRBO, Direct, etc.');
-    console.log('  - syncStatus (SELECT): SUCCESS, ERROR, PENDING');
-    console.log('  - lastSyncedAt (DATE_TIME): last successful sync');
-    console.log('  - property (RELATION -> Property): many-to-one');
-  }
-
-  // Print all custom objects found for debugging
-  console.log('');
-  console.log('--- All Custom Objects Found ---');
-  for (const obj of objects.filter((o) => o.isCustom)) {
-    const fieldNames = obj.fields
-      .filter((f) => f.isCustom)
-      .map((f) => f.name);
-    console.log(`  ${obj.nameSingular} (${obj.namePlural}): ${fieldNames.join(', ') || '(no custom fields)'}`);
+    console.log('Create missing items in Twenty Settings > Data Model.');
   }
 
   process.exit(failed > 0 ? 1 : 0);
