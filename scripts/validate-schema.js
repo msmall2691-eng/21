@@ -5,9 +5,26 @@
 //
 // Usage: node scripts/validate-schema.js
 //
-// Env vars:
+// Env vars (loaded from .env if present):
 //   TWENTY_API_URL   (default: https://21-production-0bd4.up.railway.app)
 //   TWENTY_API_TOKEN (required)
+
+// Load .env file from project root if it exists
+const fs = require('node:fs');
+const path = require('node:path');
+const envPath = path.resolve(__dirname, '..', '.env');
+if (fs.existsSync(envPath)) {
+  for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx > 0) {
+      const key = trimmed.slice(0, eqIdx);
+      const val = trimmed.slice(eqIdx + 1);
+      if (!process.env[key]) process.env[key] = val;
+    }
+  }
+}
 
 const TWENTY_API_URL = process.env.TWENTY_API_URL || 'https://21-production-0bd4.up.railway.app';
 const TWENTY_API_TOKEN = process.env.TWENTY_API_TOKEN;
