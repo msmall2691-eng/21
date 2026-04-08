@@ -1,24 +1,26 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
+import { type AddressMetadata } from 'twenty-shared/types';
+
 export type CalendarEventWithCleaningsType = {
   id: string;
   title: string | null;
   startsAt: string | null;
   endsAt: string | null;
-  location: string | null;
+  location: AddressMetadata | string | null;
   description: string | null;
   isCanceled: boolean;
   isFullDay: boolean;
   type: 'CALENDAR_EVENT' | 'CLEANING_JOB';
   // For cleaning jobs only
-  cleaningId?: string;
-  propertyId?: string;
-  propertyName?: string;
-  propertyAddress?: string;
-  guestNote?: string;
-  assignedStaffName?: string;
-  status?: string;
-  serviceAgreementId?: string;
+  cleaningId?: string | null;
+  propertyId?: string | null;
+  propertyName?: string | null;
+  propertyAddress?: AddressMetadata | string | null;
+  guestNote?: string | null;
+  assignedStaffName?: string | null;
+  status?: string | null;
+  serviceAgreementId?: string | null;
 };
 
 @ObjectType()
@@ -52,28 +54,28 @@ export class CalendarEventWithCleaningsDTO {
 
   // For cleaning jobs only
   @Field({ nullable: true })
-  cleaningId?: string;
+  cleaningId: string | null | undefined;
 
   @Field({ nullable: true })
-  propertyId?: string;
+  propertyId: string | null | undefined;
 
   @Field({ nullable: true })
-  propertyName?: string;
+  propertyName: string | null | undefined;
 
   @Field({ nullable: true })
-  propertyAddress?: string;
+  propertyAddress: string | null | undefined;
 
   @Field({ nullable: true })
-  guestNote?: string;
+  guestNote: string | null | undefined;
 
   @Field({ nullable: true })
-  assignedStaffName?: string;
+  assignedStaffName: string | null | undefined;
 
   @Field({ nullable: true })
-  status?: string;
+  status: string | null | undefined;
 
   @Field({ nullable: true })
-  serviceAgreementId?: string;
+  serviceAgreementId: string | null | undefined;
 }
 
 @ObjectType()
