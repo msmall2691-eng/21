@@ -28,6 +28,12 @@ const RecordShowPage = lazy(() =>
   })),
 );
 
+const CalendarPage = lazy(() =>
+  import('~/pages/calendar/CalendarPage').then((module) => ({
+    default: module.CalendarPage,
+  })),
+);
+
 const SignInUp = lazy(() =>
   import('~/pages/auth/SignInUp').then((module) => ({
     default: module.SignInUp,
@@ -204,6 +210,14 @@ export const useCreateAppRouter = (
             }
           />
           <Route path={indexAppPath.getIndexAppPath()} element={<></>} />
+          <Route
+            path={AppPath.Calendar}
+            element={
+              <LazyRoute>
+                <CalendarPage />
+              </LazyRoute>
+            }
+          />
           <Route
             path={AppPath.RecordIndexPage}
             element={
