@@ -17,7 +17,7 @@ import {
   type CalendarEventListFetchJobData,
 } from 'src/modules/calendar/calendar-event-import-manager/jobs/calendar-event-list-fetch.job';
 
-export const CALENDAR_EVENT_LIST_FETCH_CRON_PATTERN = '*/5 * * * *';
+export const CALENDAR_EVENT_LIST_FETCH_CRON_PATTERN = '* * * * *';
 
 @Processor({
   queueName: MessageQueue.cronQueue,

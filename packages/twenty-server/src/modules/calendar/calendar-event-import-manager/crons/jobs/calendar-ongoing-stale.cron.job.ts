@@ -16,7 +16,7 @@ import {
   type CalendarOngoingStaleJobData,
 } from 'src/modules/calendar/calendar-event-import-manager/jobs/calendar-ongoing-stale.job';
 
-export const CALENDAR_ONGOING_STALE_CRON_PATTERN = '0 * * * *';
+export const CALENDAR_ONGOING_STALE_CRON_PATTERN = '*/5 * * * *';
 
 @Processor(MessageQueue.cronQueue)
 export class CalendarOngoingStaleCronJob {
