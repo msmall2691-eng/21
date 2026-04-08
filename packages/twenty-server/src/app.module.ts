@@ -94,7 +94,7 @@ export class AppModule {
       modules.push(
         ServeStaticModule.forRoot({
           rootPath: frontPath,
-          renderPath: '/{*path}',
+          renderPath: '*',
           exclude: [
             '/graphql',
             '/metadata',
