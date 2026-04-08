@@ -25,56 +25,56 @@ export type CalendarEventWithCleaningsType = {
 
 @ObjectType()
 export class CalendarEventWithCleaningsDTO {
-  @Field()
+  @Field(() => String)
   id: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   title: string | null;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   startsAt: string | null;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   endsAt: string | null;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   location: string | null;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   description: string | null;
 
-  @Field()
+  @Field(() => Boolean)
   isCanceled: boolean;
 
-  @Field()
+  @Field(() => Boolean)
   isFullDay: boolean;
 
-  @Field()
+  @Field(() => String)
   type: string; // 'CALENDAR_EVENT' | 'CLEANING_JOB'
 
   // For cleaning jobs only
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   cleaningId: string | null | undefined;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   propertyId: string | null | undefined;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   propertyName: string | null | undefined;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   propertyAddress: string | null | undefined;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   guestNote: string | null | undefined;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   assignedStaffName: string | null | undefined;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   status: string | null | undefined;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   serviceAgreementId: string | null | undefined;
 }
 
