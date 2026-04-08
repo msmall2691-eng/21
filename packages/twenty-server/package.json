@@ -189,6 +189,7 @@
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
     "@lingui/cli": "^5.1.2",
+    "@lingui/swc-plugin": "^5.11.0",
     "@nestjs/cli": "^11.0.16",
     "@nestjs/devtools-integration": "^0.2.1",
     "@nestjs/schematics": "^11.0.9",
