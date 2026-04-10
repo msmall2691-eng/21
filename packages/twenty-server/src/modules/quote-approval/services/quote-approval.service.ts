@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TwilioService } from './twilio.service';
 import { StripeService } from './stripe.service';
-import crypto from 'crypto';
+import { PhoneService } from './phone.service';
+import { ApprovalTokenService } from './approval-token.service';
+import { InvoiceService, InvoiceData } from './invoice.service';
 
 @Injectable()
 export class QuoteApprovalService {
@@ -10,34 +12,44 @@ export class QuoteApprovalService {
   constructor(
     private readonly twilioService: TwilioService,
     private readonly stripeService: StripeService,
+    private readonly phoneService: PhoneService,
+    private readonly approvalTokenService: ApprovalTokenService,
+    private readonly invoiceService: InvoiceService,
   ) {}
 
   /**
    * Generate a unique approval token for quote approval link
    */
-  generateApprovalToken(): string {
-    return crypto.randomBytes(32).toString('hex');
+  generateApprovalToken(): { token: string; expiresAt: Date } {
+    return this.approvalTokenService.generateToken();
   }
 
   /**
    * Build approval link for quote
    */
   buildApprovalLink(token: string, baseUrl: string): string {
-    return `${baseUrl}/api/quote-approval/${token}`;
+    return this.approvalTokenService.buildApprovalLink(token, baseUrl);
   }
 
   /**
    * Build payment link for quote
    */
   buildPaymentLink(quoteId: string, baseUrl: string): string {
-    return `${baseUrl}/api/quote-payment/${quoteId}`;
+    return this.approvalTokenService.buildPaymentLink(quoteId, baseUrl);
+  }
+
+  /**
+   * Normalize phone to E.164 format
+   */
+  normalizePhone(phone: string | null | undefined): string | null {
+    return this.phoneService.normalizeToE164(phone);
   }
 
   /**
    * Validate phone number in E.164 format
    */
   validatePhoneFormat(phone: string): boolean {
-    return /^\+\d{10,15}$/.test(phone);
+    return this.phoneService.isValidFormat(phone);
   }
 
   /**
@@ -79,7 +91,12 @@ export class QuoteApprovalService {
     }
 
     const formattedAmount = this.stripeService.formatAmountForDisplay(amount);
-    return this.twilioService.sendPaymentSMS(phone, name, formattedAmount, paymentLink);
+    return this.twilioService.sendPaymentSMS(
+      phone,
+      name,
+      formattedAmount,
+      paymentLink,
+    );
   }
 
   /**
@@ -155,5 +172,59 @@ export class QuoteApprovalService {
       customerId,
       sessionId: null, // Would be set after actual session creation
     };
+  }
+
+  /**
+   * Generate invoice for quote
+   */
+  generateInvoiceData(
+    quoteId: string,
+    customerName: string,
+    customerEmail: string,
+    customerPhone: string,
+    customerAddress: string,
+    serviceType: string,
+    frequency: string,
+    estimateMin: number,
+    estimateMax: number,
+    sqft?: number,
+    bathrooms?: number,
+    notes?: string,
+  ): InvoiceData {
+    return this.invoiceService.generateInvoiceData(
+      quoteId,
+      customerName,
+      customerEmail,
+      customerPhone,
+      customerAddress,
+      serviceType,
+      frequency,
+      estimateMin,
+      estimateMax,
+      sqft,
+      bathrooms,
+      notes,
+    );
+  }
+
+  /**
+   * Format invoice as text
+   */
+  formatInvoiceAsText(invoice: InvoiceData): string {
+    return this.invoiceService.formatInvoiceAsText(invoice);
+  }
+
+  /**
+   * Generate invoice SMS summary
+   */
+  generateInvoiceSMSSummary(invoice: InvoiceData): string {
+    return this.invoiceService.generateInvoiceSMSSummary(invoice);
+  }
+
+  /**
+   * Generate invoice email summary
+   */
+  generateInvoiceEmailSummary(invoice: InvoiceData, invoiceUrl?: string): string {
+    return this.invoiceService.generateInvoiceEmailSummary(invoice, invoiceUrl);
   }
 }
