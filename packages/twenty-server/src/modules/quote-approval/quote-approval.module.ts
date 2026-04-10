@@ -5,9 +5,11 @@ import { PhoneService } from './services/phone.service';
 import { ApprovalTokenService } from './services/approval-token.service';
 import { InvoiceService } from './services/invoice.service';
 import { QuoteApprovalService } from './services/quote-approval.service';
+import { QuoteApprovalController } from './controllers/quote-approval.controller';
 
 @Module({
   imports: [],
+  controllers: [QuoteApprovalController],
   providers: [
     TwilioService,
     StripeService,
