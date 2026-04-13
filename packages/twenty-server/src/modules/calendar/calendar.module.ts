@@ -5,6 +5,8 @@ import { CalendarEventCleanerModule } from 'src/modules/calendar/calendar-event-
 import { CalendarEventImportManagerModule } from 'src/modules/calendar/calendar-event-import-manager/calendar-event-import-manager.module';
 import { CalendarEventParticipantManagerModule } from 'src/modules/calendar/calendar-event-participant-manager/calendar-event-participant-manager.module';
 import { CalendarCommonModule } from 'src/modules/calendar/common/calendar-common.module';
+import { JobVisitCalendarSyncService } from 'src/modules/calendar/services/job-visit-calendar-sync.service';
+import { ConnectedAccountModule } from 'src/modules/connected-account/connected-account.module';
 
 @Module({
   imports: [
@@ -13,8 +15,9 @@ import { CalendarCommonModule } from 'src/modules/calendar/common/calendar-commo
     CalendarEventImportManagerModule,
     CalendarEventParticipantManagerModule,
     CalendarCommonModule,
+    ConnectedAccountModule,
   ],
-  providers: [],
-  exports: [],
+  providers: [JobVisitCalendarSyncService],
+  exports: [JobVisitCalendarSyncService],
 })
 export class CalendarModule {}

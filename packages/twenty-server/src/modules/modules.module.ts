@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { CalendarModule } from 'src/modules/calendar/calendar.module';
+import { CalendarJobsModule } from 'src/modules/calendar/calendar-jobs.module';
 import { ConnectedAccountModule } from 'src/modules/connected-account/connected-account.module';
 import { FavoriteFolderModule } from 'src/modules/favorite-folder/favorite-folder.module';
 import { FavoriteModule } from 'src/modules/favorite/favorite.module';
@@ -15,6 +16,7 @@ import { WorkspaceMemberModule } from 'src/modules/workspace-member/workspace-me
   imports: [
     MessagingModule,
     CalendarModule,
+    CalendarJobsModule,
     ConnectedAccountModule,
     LeadCaptureFromEmailModule,
     QuoteApprovalModule,
