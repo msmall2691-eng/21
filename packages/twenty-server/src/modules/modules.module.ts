@@ -4,6 +4,7 @@ import { CalendarModule } from 'src/modules/calendar/calendar.module';
 import { ConnectedAccountModule } from 'src/modules/connected-account/connected-account.module';
 import { FavoriteFolderModule } from 'src/modules/favorite-folder/favorite-folder.module';
 import { FavoriteModule } from 'src/modules/favorite/favorite.module';
+import { LeadCaptureFromEmailModule } from 'src/modules/lead-capture-from-email/lead-capture-from-email.module';
 import { MessagingModule } from 'src/modules/messaging/messaging.module';
 import { QuoteApprovalModule } from 'src/modules/quote-approval/quote-approval.module';
 import { QuoteModule } from 'src/modules/quote/quote.module';
@@ -15,6 +16,7 @@ import { WorkspaceMemberModule } from 'src/modules/workspace-member/workspace-me
     MessagingModule,
     CalendarModule,
     ConnectedAccountModule,
+    LeadCaptureFromEmailModule,
     QuoteApprovalModule,
     QuoteModule,
     WorkflowModule,
