@@ -6,6 +6,7 @@ import { FavoriteFolderModule } from 'src/modules/favorite-folder/favorite-folde
 import { FavoriteModule } from 'src/modules/favorite/favorite.module';
 import { MessagingModule } from 'src/modules/messaging/messaging.module';
 import { QuoteApprovalModule } from 'src/modules/quote-approval/quote-approval.module';
+import { QuoteModule } from 'src/modules/quote/quote.module';
 import { WorkflowModule } from 'src/modules/workflow/workflow.module';
 import { WorkspaceMemberModule } from 'src/modules/workspace-member/workspace-member.module';
 
@@ -15,6 +16,7 @@ import { WorkspaceMemberModule } from 'src/modules/workspace-member/workspace-me
     CalendarModule,
     ConnectedAccountModule,
     QuoteApprovalModule,
+    QuoteModule,
     WorkflowModule,
     FavoriteFolderModule,
     FavoriteModule,
