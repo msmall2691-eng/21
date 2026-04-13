@@ -261,22 +261,59 @@ private readonly CLEANING_KEYWORDS = [
 
 Update in `LeadExtractionService` to tune detection.
 
+## Important: Always Create NEW Client Records
+
+**This module creates a NEW Person record for every email**, even if that email address already exists in the CRM.
+
+Why? Megan wants to see every inbound lead independently, without auto-linking to existing customers. This allows her to:
+- ✅ Review each inquiry separately (context matters)
+- ✅ Manually deduplicate if it's a known customer re-inquiring
+- ✅ Distinguish between "repeat customer" vs "new prospect"
+- ✅ Track multiple inquiries from same person for different properties
+
+**Implementation note:**
+When building the job processor, ALWAYS use:
+```typescript
+// Create new Person (don't upsert by email)
+const newPerson = await personService.create({
+  email: leadData.email,
+  phone: leadData.phone,
+  name: leadData.name,
+  createdFromEmailLead: true,  // tag for filtering
+});
+
+// Create Opportunity
+const newOpp = await opportunityService.create({
+  personId: newPerson.id,
+  // ... other fields
+});
+
+// Link MessageThread to Opportunity
+await messageThreadService.update(threadId, {
+  opportunityId: newOpp.id,
+});
+```
+
 ## Workflow: Email → Quote → Payment
 
 ```
-1. Customer emails → Lead Capture detects → Opportunity created
+1. Customer emails → Lead Capture detects → NEW Opportunity + Person created
          ↓
-2. Sales reviews opportunity → Clicks "Send Quote"
+2. Megan reviews in CRM (can see all email inquiries)
          ↓
-3. Quote webhook created (Spec 01) → Draft Quote in CRM
+3. If existing customer: manually merge Person records
          ↓
-4. Opportunity linked to Quote
+4. If new prospect: proceed with quote
          ↓
-5. Customer approves via SMS/email (Spec 02)
+5. Clicks "Send Quote" (Spec 01) → Draft Quote created
          ↓
-6. Payment captured via Stripe (Spec 05)
+6. Sends SMS/email with approval link (Spec 02)
          ↓
-7. Scheduled cleaning + Invoice sent
+7. Customer approves via link
+         ↓
+8. Payment captured via Stripe (Spec 05)
+         ↓
+9. Cleaning scheduled (Spec 04) → Invoice sent
 ```
 
 ## Data Flow
@@ -327,10 +364,64 @@ Update in `LeadExtractionService` to tune detection.
 - Add more regex patterns for bedroom/bathroom/square feet detection
 - Handle regional variations ("sq ft" vs "sqft" vs "square feet")
 
+## SMS & Email Capabilities
+
+**Yes! You can SMS and email customers directly from Twenty.**
+
+### 📧 Email (Built-In)
+
+**Sending emails:**
+1. Go to any **Person** or **Opportunity** record
+2. Scroll to **Emails** widget
+3. Click **Compose**
+4. Write email → Send
+
+**Viewing emails:**
+- All incoming emails automatically synced from Gmail
+- **Emails** widget shows full thread history
+- Click to read, reply inline
+
+**Requirements:**
+- Gmail account connected (Settings → Connected Accounts)
+- Oauth enabled on Railway (MESSAGING_PROVIDER_GMAIL_ENABLED=true)
+
+### 💬 SMS (Via Twilio)
+
+**Sending SMS:**
+- Built into the quote-approval module (Spec 02)
+- Send approval links via SMS
+- Customers reply "YES" to approve
+- Webhook processes replies
+
+**Requirements:**
+- Twilio account + credentials set on Railway:
+  ```
+  TWILIO_ACCOUNT_SID=xxx
+  TWILIO_AUTH_TOKEN=xxx
+  TWILIO_PHONE_NUMBER=+1234567890
+  ```
+
+**How it works:**
+1. Create quote (Spec 01) → generates approval token
+2. Click "Send for Approval" → sends SMS with link
+3. Customer clicks link OR replies "YES"
+4. Stripe payment page opens
+5. Payment captured → Cleaning scheduled
+
+---
+
+## Integration Checklist for Megan
+
+- [ ] **Email**: Gmail OAuth credentials set on Railway
+- [ ] **SMS**: Twilio account created + credentials on Railway
+- [ ] **Email leads**: Job processor built to link emails to opportunities
+- [ ] **Test flow**: Email → Lead created → Quote sent → SMS approval → Payment
+
 ## References
 
 - **Spec 01**: Quote intake webhook
-- **Spec 02**: SMS/email quote approval
+- **Spec 02**: SMS/email quote approval (uses Twilio)
 - **Spec 03**: Digital signature capture
 - **Spec 04**: Cleaning scheduling
 - **Spec 05**: Invoice + Stripe payment
+- **Quote Approval Module**: `src/modules/quote-approval/` (handles SMS + Stripe)

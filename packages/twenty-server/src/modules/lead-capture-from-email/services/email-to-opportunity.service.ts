@@ -4,6 +4,14 @@ import { LeadExtractionService, ExtractedLeadData } from './lead-extraction.serv
 /**
  * Service for converting emails into CRM opportunities.
  * Detects cleaning requests in email threads and creates Person + Opportunity.
+ *
+ * IMPORTANT: This service generates opportunity data. When implementing the job
+ * processor that uses this service, ALWAYS create a NEW Person record for each email,
+ * even if the email address already exists in the CRM.
+ *
+ * Why? Megan wants to see every inbound lead independently without auto-deduplication.
+ * She can manually merge Person records if needed, but each email inquiry gets its own
+ * Opportunity for proper tracking and context.
  */
 @Injectable()
 export class EmailToOpportunityService {
@@ -67,13 +75,20 @@ export class EmailToOpportunityService {
   /**
    * Build opportunity data from extracted lead information.
    * This is returned; the caller is responsible for creating the Opportunity.
+   *
+   * CALLER RESPONSIBILITY:
+   * - Always create a NEW Person record (don't upsert by email)
+   * - Set companyId to null (don't auto-link to existing companies)
+   * - Let Megan manually deduplicate if this is a repeat customer
+   *
+   * This ensures each email inquiry is tracked independently with proper context.
    */
   buildOpportunityData(leadData: ExtractedLeadData, personId: string, companyId?: string) {
     const description = this.buildOpportunityDescription(leadData);
 
     return {
       personId,
-      companyId: companyId || null,
+      companyId: companyId || null, // Leave null: don't auto-link to companies
       stage: 'New Lead',
       amount: null, // Will be populated when quote is created
       closeDate: null,
@@ -81,6 +96,7 @@ export class EmailToOpportunityService {
       description,
       metadata: {
         source: 'email',
+        emailAddress: leadData.email, // Store for reference
         extractedServiceType: leadData.serviceType,
         extractedFrequency: leadData.requestedFrequency,
         extractedSquareFeet: leadData.estimatedSquareFeet,
