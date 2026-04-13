@@ -84,8 +84,6 @@ export class SyncJobVisitsToCalendarJob {
 
   constructor() {}
 
-  static name = 'SyncJobVisitsToCalendarJob';
-
   @Process(SyncJobVisitsToCalendarJob.name)
   async handle(data: SyncJobVisitsToCalendarJobData): Promise<void> {
     try {
