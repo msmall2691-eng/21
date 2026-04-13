@@ -5,16 +5,11 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
-  BadRequestException,
   UnauthorizedException,
   Logger,
-  Inject,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IntakeService } from '../services/intake.service';
-import { IntakePayload, IntakePayloadResponse } from '../dtos/intake-payload.dto';
-import { TimingFunction } from 'src/engine/utils/timing/timing.decorator';
-import { WorkspaceAuthGuard } from 'src/engine/guards/workspace-auth.guard';
+import { IntakePayloadResponse } from '../dtos/intake-payload.dto';
 
 /**
  * Webhook controller for quote intake requests from maineclean.co
@@ -28,7 +23,6 @@ export class IntakeWebhookController {
 
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
-  @TimingFunction()
   async handleIntakeWebhook(
     @Body() rawPayload: unknown,
     @Headers('x-intake-secret') secret: string,
