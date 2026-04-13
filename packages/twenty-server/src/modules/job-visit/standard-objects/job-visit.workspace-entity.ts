@@ -5,6 +5,7 @@ import {
 
 import { type FieldTypeAndNameMetadata } from 'src/engine/workspace-manager/utils/get-ts-vector-column-expression.util';
 import { type EntityRelation } from 'src/engine/workspace-manager/workspace-migration/types/entity-relation.interface';
+import { type CalendarEventWorkspaceEntity } from 'src/modules/calendar/common/standard-objects/calendar-event.workspace-entity';
 import { type PropertyWorkspaceEntity } from 'src/modules/property/standard-objects/property.workspace-entity';
 import { type ServiceAgreementWorkspaceEntity } from 'src/modules/service-agreement/standard-objects/service-agreement.workspace-entity';
 import { type StaffMemberWorkspaceEntity } from 'src/modules/staff-member/standard-objects/staff-member.workspace-entity';
@@ -39,4 +40,6 @@ export class JobVisitWorkspaceEntity {
   serviceAgreementId: string | null;
   staffMember: EntityRelation<StaffMemberWorkspaceEntity> | null;
   staffMemberId: string | null;
+  calendarEvent: EntityRelation<CalendarEventWorkspaceEntity> | null;
+  calendarEventId: string | null;
 }
