@@ -1,7 +1,8 @@
 import { useQuery } from '@apollo/client/react';
 import { GET_CALENDAR_WITH_CLEANINGS } from '@/calendar/graphql/queries/getCalendarWithCleanings';
+import { GET_JOB_VISITS_WITH_SYNC_STATUS } from '@/calendar/graphql/queries/getJobVisitsWithSyncStatus';
 import { PageContainer } from '@/ui/layout/page/components/PageContainer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { styled } from '@linaria/react';
 
 type CalendarEvent = {
@@ -24,12 +25,54 @@ type CalendarEvent = {
   serviceAgreementId?: string | null;
 };
 
+type JobVisit = {
+  id: string;
+  name: string | null;
+  scheduledDate: string | null;
+  completedDate: string | null;
+  status: string | null;
+  duration: number | null;
+  notes: string | null;
+  checklistCompleted: boolean;
+  calendarEventId: string | null;
+  property: {
+    id: string;
+    name: string | null;
+    address: string | null;
+  } | null;
+  staffMember: {
+    id: string;
+    name: string | null;
+  } | null;
+  calendarEvent: {
+    id: string;
+    title: string | null;
+    startsAt: string | null;
+    endsAt: string | null;
+    location: string | null;
+    description: string | null;
+  } | null;
+};
+
 type CalendarWithCleaningsResponse = {
   getCalendarWithCleanings: {
     events: CalendarEvent[];
     totalCount: number;
     startDate: string;
     endDate: string;
+  };
+};
+
+type JobVisitsResponse = {
+  jobVisits: {
+    edges: Array<{ node: JobVisit }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor: string | null;
+      endCursor: string | null;
+    };
+    totalCount: number;
   };
 };
 
@@ -100,16 +143,49 @@ const EventDetail = styled.p`
   color: #666;
 `;
 
-const Badge = styled.span<{ type: 'CALENDAR_EVENT' | 'CLEANING_JOB' }>`
+const Badge = styled.span<{ type?: 'CALENDAR_EVENT' | 'CLEANING_JOB' | 'JOB_VISIT' }>`
   display: inline-block;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
-  background-color: ${(props) =>
-    props.type === 'CALENDAR_EVENT' ? '#1565c0' : '#7b1fa2'};
+  background-color: ${(props) => {
+    switch (props.type) {
+      case 'CALENDAR_EVENT': return '#1565c0';
+      case 'CLEANING_JOB': return '#7b1fa2';
+      case 'JOB_VISIT': return '#f57c00';
+      default: return '#616161';
+    }
+  }};
   color: white;
   margin-bottom: 8px;
+`;
+
+const SyncStatusIndicator = styled.span<{ synced: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: ${(props) => props.synced ? '#c8e6c9' : '#fff9c4'};
+  color: ${(props) => props.synced ? '#2e7d32' : '#f57f17'};
+  margin-bottom: 8px;
+`;
+
+const SyncIndicatorDot = styled.span<{ synced: boolean }>`
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: ${(props) => props.synced ? '#2e7d32' : '#f57f17'};
+  animation: ${(props) => props.synced ? 'none' : 'pulse 2s infinite'};
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
 `;
 
 const LoadingContainer = styled.div`
@@ -136,26 +212,99 @@ export const CalendarPage = () => {
 
   const [startDate, setStartDate] = useState(oneMonthAgo.toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(oneMonthLater.toISOString().split('T')[0]);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+
+  const startDateISO = `${startDate}T00:00:00Z`;
+  const endDateISO = `${endDate}T23:59:59Z`;
 
   const { data, loading, error, refetch } = useQuery<CalendarWithCleaningsResponse>(
     GET_CALENDAR_WITH_CLEANINGS,
     {
       variables: {
-        startDate: `${startDate}T00:00:00Z`,
-        endDate: `${endDate}T23:59:59Z`,
+        startDate: startDateISO,
+        endDate: endDateISO,
         propertyIds: null,
       },
     },
   );
 
+  const {
+    data: jobVisitsData,
+    loading: jobVisitsLoading,
+    error: jobVisitsError,
+    refetch: refetchJobVisits,
+  } = useQuery<JobVisitsResponse>(GET_JOB_VISITS_WITH_SYNC_STATUS);
+
+  // Auto-refresh every 30 seconds for live sync status
+  useEffect(() => {
+    if (!autoRefresh) return;
+
+    const interval = setInterval(() => {
+      refetchJobVisits();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, refetchJobVisits]);
+
   const handleDateChange = () => {
     refetch({
-      startDate: `${startDate}T00:00:00Z`,
-      endDate: `${endDate}T23:59:59Z`,
+      startDate: startDateISO,
+      endDate: endDateISO,
     });
+    refetchJobVisits();
   };
 
   const events = data?.getCalendarWithCleanings?.events || [];
+
+  // Filter JobVisits by date range on frontend
+  const startDateMs = new Date(startDateISO).getTime();
+  const endDateMs = new Date(endDateISO).getTime();
+  const allJobVisits = jobVisitsData?.jobVisits?.edges?.map((edge) => edge.node) || [];
+  const jobVisits = allJobVisits.filter((job) => {
+    if (!job.scheduledDate) return false;
+    const jobTime = new Date(job.scheduledDate).getTime();
+    return jobTime >= startDateMs && jobTime <= endDateMs;
+  });
+  const allItems = [
+    ...events.map((event) => ({
+      id: event.id,
+      type: event.type as 'CALENDAR_EVENT' | 'CLEANING_JOB',
+      title: event.title,
+      startTime: event.startsAt,
+      endTime: event.endsAt,
+      location: event.location,
+      description: event.description,
+      propertyName: event.propertyName,
+      propertyAddress: event.propertyAddress,
+      guestNote: event.guestNote,
+      assignedStaffName: event.assignedStaffName,
+      status: event.status,
+      isCanceled: event.isCanceled,
+      syncStatus: 'synced' as const,
+    })),
+    ...jobVisits.map((job) => ({
+      id: job.id,
+      type: 'JOB_VISIT' as const,
+      title: job.name || 'Untitled Job Visit',
+      startTime: job.scheduledDate,
+      endTime: job.completedDate,
+      location: job.property?.address || null,
+      description: job.notes || null,
+      propertyName: job.property?.name || null,
+      propertyAddress: job.property?.address || null,
+      guestNote: job.notes || null,
+      assignedStaffName: job.staffMember?.name || null,
+      status: job.status,
+      isSynced: !!job.calendarEventId,
+      syncStatus: job.calendarEventId ? 'synced' : 'pending' as const,
+      calendarEventId: job.calendarEventId,
+      jobVisitId: job.id,
+    })),
+  ].sort((a, b) => {
+    const timeA = new Date(a.startTime || 0).getTime();
+    const timeB = new Date(b.startTime || 0).getTime();
+    return timeA - timeB;
+  });
 
   return (
     <PageContainer>
@@ -180,60 +329,89 @@ export const CalendarPage = () => {
             />
           </div>
           <Button onClick={handleDateChange}>Load Events</Button>
+          <Button
+            style={{
+              backgroundColor: autoRefresh ? '#4caf50' : '#999',
+              marginLeft: 'auto',
+            }}
+            onClick={() => setAutoRefresh(!autoRefresh)}
+          >
+            {autoRefresh ? '🔄 Live Sync ON' : '⏸ Live Sync OFF'}
+          </Button>
         </ControlsContainer>
 
-        {error && (
+        {(error || jobVisitsError) && (
           <ErrorContainer>
-            Error loading events: {error.message}
+            {error && `Error loading events: ${error.message}`}
+            {jobVisitsError && `Error loading job visits: ${jobVisitsError.message}`}
           </ErrorContainer>
         )}
 
-        {loading && <LoadingContainer>Loading events...</LoadingContainer>}
+        {(loading || jobVisitsLoading) && (
+          <LoadingContainer>Loading calendar...</LoadingContainer>
+        )}
 
-        {!loading && (
+        {!loading && !jobVisitsLoading && (
           <>
             <div>
-              Showing {events.length} event{events.length !== 1 ? 's' : ''} (
-              {data?.getCalendarWithCleanings?.totalCount || 0} total)
+              Showing {allItems.length} item
+              {allItems.length !== 1 ? 's' : ''} ({events.length} calendar event
+              {events.length !== 1 ? 's' : ''}, {jobVisits.length} job visit
+              {jobVisits.length !== 1 ? 's' : ''})
             </div>
 
             <EventsContainer>
-              {events.length === 0 ? (
+              {allItems.length === 0 ? (
                 <LoadingContainer>No events found for this date range</LoadingContainer>
               ) : (
-                events.map((event: any) => (
-                  <EventCard key={event.id} type={event.type}>
-                    <Badge type={event.type}>
-                      {event.type === 'CALENDAR_EVENT'
-                        ? '📅 Calendar Event'
-                        : '🧹 Cleaning Job'}
-                    </Badge>
-                    <EventTitle>{event.title}</EventTitle>
+                allItems.map((item: any) => (
+                  <EventCard
+                    key={item.id}
+                    type={item.type === 'JOB_VISIT' ? undefined : (item.type as 'CALENDAR_EVENT' | 'CLEANING_JOB')}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <Badge type={item.type}>
+                          {item.type === 'CALENDAR_EVENT'
+                            ? '📅 Calendar Event'
+                            : item.type === 'CLEANING_JOB'
+                              ? '🧹 Cleaning Job'
+                              : '📍 Job Visit'}
+                        </Badge>
+                      </div>
+                      {item.type === 'JOB_VISIT' && (
+                        <SyncStatusIndicator synced={item.isSynced}>
+                          <SyncIndicatorDot synced={item.isSynced} />
+                          {item.isSynced ? '✓ Synced' : '⏳ Pending'}
+                        </SyncStatusIndicator>
+                      )}
+                    </div>
+                    <EventTitle>{item.title}</EventTitle>
 
-                    {event.startsAt && (
+                    {item.startTime && (
                       <EventDetail>
-                        📅 {new Date(event.startsAt).toLocaleString()}
+                        📅 {new Date(item.startTime).toLocaleString()}
                       </EventDetail>
                     )}
 
-                    {event.location && (
-                      <EventDetail>📍 {event.location}</EventDetail>
+                    {item.location && (
+                      <EventDetail>📍 {item.location}</EventDetail>
                     )}
 
-                    {event.description && (
-                      <EventDetail>💬 {event.description}</EventDetail>
+                    {item.description && (
+                      <EventDetail>💬 {item.description}</EventDetail>
                     )}
 
-                    {event.type === 'CLEANING_JOB' && (
+                    {(item.type === 'CLEANING_JOB' || item.type === 'JOB_VISIT') && (
                       <>
-                        {event.propertyName && (
-                          <EventDetail>🏠 Property: {event.propertyName}</EventDetail>
+                        {item.propertyName && (
+                          <EventDetail>🏠 Property: {item.propertyName}</EventDetail>
                         )}
-                        {event.assignedStaffName && (
-                          <EventDetail>👤 Staff: {event.assignedStaffName}</EventDetail>
+                        {item.assignedStaffName && (
+                          <EventDetail>👤 Staff: {item.assignedStaffName}</EventDetail>
                         )}
-                        {event.status && (
-                          <EventDetail>Status: {event.status}</EventDetail>
+                        {item.status && (
+                          <EventDetail>Status: {item.status}</EventDetail>
                         )}
                       </>
                     )}
