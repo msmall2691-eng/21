@@ -1,7 +1,7 @@
 import { Args, Query, Resolver, Parent, ResolveField } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 
-import { JwtAuthGuard } from 'src/engine/guards/jwt.auth.guard';
+import { JwtAuthGuard } from 'src/engine/guards/jwt-auth.guard';
 import { AuthContext } from 'src/engine/decorators/auth/auth-context.decorator';
 import { AuthContextType } from 'src/engine/types/auth-context.type';
 import { SmsService } from '../services/sms.service';
