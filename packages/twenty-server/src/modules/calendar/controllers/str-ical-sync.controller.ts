@@ -18,7 +18,7 @@ export class StrIcalSyncController {
   private readonly logger = new Logger(StrIcalSyncController.name);
 
   constructor(
-    @InjectMessageQueue(MessageQueue.generalQueue)
+    @InjectMessageQueue(MessageQueue.calendarQueue)
     private readonly messageQueueService: MessageQueueService,
   ) {}
 

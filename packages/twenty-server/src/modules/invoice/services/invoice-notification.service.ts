@@ -21,7 +21,7 @@ export class InvoiceNotificationService {
 
   constructor(
     private readonly globalWorkspaceOrmManager: GlobalWorkspaceOrmManager,
-    @InjectMessageQueue(MessageQueue.generalQueue)
+    @InjectMessageQueue(MessageQueue.emailQueue)
     private readonly messageQueueService: MessageQueueService,
   ) {}
 

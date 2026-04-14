@@ -22,7 +22,7 @@ export type StrIcalSyncJobData = {
  * - Property iCal feed URL updates
  */
 @Injectable()
-@Processor(MessageQueue.generalQueue)
+@Processor(MessageQueue.calendarQueue)
 export class StrIcalSyncJob {
   private readonly logger = new Logger(StrIcalSyncJob.name);
 

@@ -24,7 +24,7 @@ export class StrIcalSyncCronJob {
 
   constructor(
     private readonly workspaceService: WorkspaceService,
-    @InjectMessageQueue(MessageQueue.generalQueue)
+    @InjectMessageQueue(MessageQueue.calendarQueue)
     private readonly messageQueueService: MessageQueueService,
   ) {}
 

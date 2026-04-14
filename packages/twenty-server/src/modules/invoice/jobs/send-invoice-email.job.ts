@@ -15,7 +15,7 @@ export type SendInvoiceEmailJobData = {
 };
 
 @Injectable()
-@Processor(MessageQueue.generalQueue)
+@Processor(MessageQueue.emailQueue)
 export class SendInvoiceEmailJob {
   private readonly logger = new Logger(SendInvoiceEmailJob.name);
 
