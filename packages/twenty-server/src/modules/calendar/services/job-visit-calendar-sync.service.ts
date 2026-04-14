@@ -10,6 +10,63 @@ import { type CalendarChannelEventAssociationWorkspaceEntity } from 'src/modules
 import { type ConnectedAccountWorkspaceEntity } from 'src/modules/connected-account/standard-objects/connected-account.workspace-entity';
 import { OAuth2ClientManagerService } from 'src/modules/connected-account/oauth2-client-manager/services/oauth2-client-manager.service';
 
+// Business timezone for scheduled cleaning events.
+// The Maine Cleaning Co. is in Maine -> Eastern Time.
+// If expanding to other regions, move this onto a per-workspace setting.
+const BUSINESS_TIME_ZONE = 'America/New_York';
+
+// Cleaning window (wall-clock in BUSINESS_TIME_ZONE).
+const CLEANING_START_HOUR = 10; // 10:00 AM local
+const CLEANING_END_HOUR = 12; // 12:00 PM local
+
+/**
+ * Build a "floating" ISO-ish datetime string (no Z, no offset) for a given
+ * calendar day + hour. Google Calendar's events.insert treats dateTime
+ * without an offset as local to the provided `timeZone` field, so this
+ * produces an event that lands at the correct wall-clock time in
+ * BUSINESS_TIME_ZONE regardless of the server's own timezone.
+ */
+const buildFloatingDateTime = (date: Date, hour: number): string => {
+  // Use UTC components as the "day" anchor — scheduledDate from iCal
+  // comes in as a UTC midnight so getUTC* gives us the intended calendar day.
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const hh = String(hour).padStart(2, '0');
+  return `${year}-${month}-${day}T${hh}:00:00`;
+};
+
+/**
+ * Return the offset (in milliseconds) for `instant` as seen in `timeZone`.
+ * Positive when tz is ahead of UTC, negative when behind. Handles DST.
+ */
+const getTimeZoneOffsetMs = (instant: Date, timeZone: string): number => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    timeZoneName: 'shortOffset',
+  }).formatToParts(instant);
+  const offsetStr =
+    parts.find((part) => part.type === 'timeZoneName')?.value ?? 'GMT';
+  const match = offsetStr.match(/GMT([+-]?\d+)(?::(\d+))?/);
+  if (!match) return 0;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2] ?? 0);
+  const sign = hours === 0 ? 1 : Math.sign(hours);
+  return (hours * 60 + sign * minutes) * 60 * 1000;
+};
+
+/**
+ * Build a real UTC Date representing `hour:00` wall-clock on `date` in
+ * BUSINESS_TIME_ZONE. Used when we need to persist the event to Twenty's
+ * DB as a proper UTC ISO string.
+ */
+const toBusinessTimeUTC = (date: Date, hour: number): Date => {
+  const floating = buildFloatingDateTime(date, hour);
+  const candidate = new Date(`${floating}Z`);
+  const offset = getTimeZoneOffsetMs(candidate, BUSINESS_TIME_ZONE);
+  return new Date(candidate.getTime() - offset);
+};
+
 /**
  * Service to sync JobVisit records (Airbnb turnovers) to Google Calendar.
  *
@@ -133,11 +190,14 @@ export class JobVisitCalendarSyncService {
           return;
         }
 
-        const startTime = new Date(input.checkoutDate);
-        startTime.setHours(10, 0, 0, 0);
-
-        const endTime = new Date(input.checkoutDate);
-        endTime.setHours(12, 0, 0, 0);
+        const startTime = toBusinessTimeUTC(
+          input.checkoutDate,
+          CLEANING_START_HOUR,
+        );
+        const endTime = toBusinessTimeUTC(
+          input.checkoutDate,
+          CLEANING_END_HOUR,
+        );
 
         await calendarEventRepository.update(input.calendarEventId, {
           startsAt: startTime.toISOString(),
@@ -246,11 +306,14 @@ export class JobVisitCalendarSyncService {
       auth: oAuth2Client,
     });
 
-    const startTime = new Date(input.checkoutDate);
-    startTime.setHours(10, 0, 0, 0);
-
-    const endTime = new Date(input.checkoutDate);
-    endTime.setHours(12, 0, 0, 0);
+    const startDateTime = buildFloatingDateTime(
+      input.checkoutDate,
+      CLEANING_START_HOUR,
+    );
+    const endDateTime = buildFloatingDateTime(
+      input.checkoutDate,
+      CLEANING_END_HOUR,
+    );
 
     const event: calendarV3.Schema$Event = {
       summary: this.buildEventTitle(input.propertyName, input.checkoutDate),
@@ -261,12 +324,12 @@ export class JobVisitCalendarSyncService {
       }),
       location: input.propertyAddress || undefined,
       start: {
-        dateTime: startTime.toISOString(),
-        timeZone: 'America/Denver', // TODO: Make configurable
+        dateTime: startDateTime,
+        timeZone: BUSINESS_TIME_ZONE,
       },
       end: {
-        dateTime: endTime.toISOString(),
-        timeZone: 'America/Denver', // TODO: Make configurable
+        dateTime: endDateTime,
+        timeZone: BUSINESS_TIME_ZONE,
       },
       transparency: 'opaque', // Mark as busy
     };
@@ -309,11 +372,14 @@ export class JobVisitCalendarSyncService {
             'calendarEvent',
           );
 
-        const startTime = new Date(input.checkoutDate);
-        startTime.setHours(10, 0, 0, 0);
-
-        const endTime = new Date(input.checkoutDate);
-        endTime.setHours(12, 0, 0, 0);
+        const startTime = toBusinessTimeUTC(
+          input.checkoutDate,
+          CLEANING_START_HOUR,
+        );
+        const endTime = toBusinessTimeUTC(
+          input.checkoutDate,
+          CLEANING_END_HOUR,
+        );
 
         const eventId = uuid();
         const newEvent = {
