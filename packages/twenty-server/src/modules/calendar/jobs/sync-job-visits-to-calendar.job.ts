@@ -78,7 +78,9 @@ export class SyncJobVisitsToCalendarCronJob {
  * Actual job that syncs JobVisits to Google Calendar.
  * Runs once per workspace per cron cycle.
  */
-@Injectable()
+@Processor({
+  queueName: MessageQueue.generalQueue,
+})
 export class SyncJobVisitsToCalendarJob {
   private readonly logger = new Logger(SyncJobVisitsToCalendarJob.name);
 
