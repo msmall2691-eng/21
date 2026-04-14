@@ -34,6 +34,12 @@ const CalendarPage = lazy(() =>
   })),
 );
 
+const CalendarSchedulePage = lazy(() =>
+  import('~/pages/calendar/CalendarSchedulePage').then((module) => ({
+    default: module.CalendarSchedulePage,
+  })),
+);
+
 const CleaningDashboardPage = lazy(() =>
   import('~/pages/cleaning-dashboard/CleaningDashboardPage').then((module) => ({
     default: module.CleaningDashboardPage,
@@ -221,6 +227,14 @@ export const useCreateAppRouter = (
             element={
               <LazyRoute>
                 <CalendarPage />
+              </LazyRoute>
+            }
+          />
+          <Route
+            path="/calendar/schedule"
+            element={
+              <LazyRoute>
+                <CalendarSchedulePage />
               </LazyRoute>
             }
           />

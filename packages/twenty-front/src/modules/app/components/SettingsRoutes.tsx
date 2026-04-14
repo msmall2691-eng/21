@@ -466,6 +466,14 @@ const SettingsRoleAddObjectLevel = lazy(() =>
   ),
 );
 
+const SettingsCalendarStrProperties = lazy(() =>
+  import('~/pages/settings/calendar/SettingsCalendarStrProperties').then(
+    (module) => ({
+      default: module.SettingsCalendarStrProperties,
+    }),
+  ),
+);
+
 type SettingsRoutesProps = {
   isFunctionSettingsEnabled?: boolean;
   isAdminPageEnabled?: boolean;
@@ -561,6 +569,10 @@ export const SettingsRoutes = ({ isAdminPageEnabled }: SettingsRoutesProps) => (
           element={<SettingsLogicFunctionDetail />}
         />
         <Route path={SettingsPath.Billing} element={<SettingsBilling />} />
+        <Route
+          path={SettingsPath.CalendarStrProperties}
+          element={<SettingsCalendarStrProperties />}
+        />
         <Route
           element={
             <SettingsProtectedRouteWrapper
