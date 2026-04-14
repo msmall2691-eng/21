@@ -5,6 +5,7 @@ import { CalendarEventCleanerModule } from 'src/modules/calendar/calendar-event-
 import { CalendarEventImportManagerModule } from 'src/modules/calendar/calendar-event-import-manager/calendar-event-import-manager.module';
 import { CalendarEventParticipantManagerModule } from 'src/modules/calendar/calendar-event-participant-manager/calendar-event-participant-manager.module';
 import { CalendarCommonModule } from 'src/modules/calendar/common/calendar-common.module';
+import { CalendarCompletionHandlerModule } from 'src/modules/calendar/calendar-completion-handler/calendar-completion-handler.module';
 import { ConnectedAccountModule } from 'src/modules/connected-account/connected-account.module';
 
 /**
@@ -25,6 +26,7 @@ import { ConnectedAccountModule } from 'src/modules/connected-account/connected-
     CalendarEventImportManagerModule,
     CalendarEventParticipantManagerModule,
     CalendarCommonModule,
+    CalendarCompletionHandlerModule,
     ConnectedAccountModule,
   ],
   providers: [],

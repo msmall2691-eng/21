@@ -12,22 +12,26 @@ import {
   SyncJobVisitsToCalendarJob,
 } from 'src/modules/calendar/jobs/sync-job-visits-to-calendar.job';
 import { JobVisitCalendarSyncService } from 'src/modules/calendar/services/job-visit-calendar-sync.service';
+import { GoogleCalendarCompletionHandlerService } from 'src/modules/calendar/services/google-calendar-completion-handler.service';
 import { ConnectedAccountModule } from 'src/modules/connected-account/connected-account.module';
 import { OAuth2ClientManagerModule } from 'src/modules/connected-account/oauth2-client-manager/oauth2-client-manager.module';
+import { InvoiceModule } from 'src/modules/invoice/invoice.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([WorkspaceEntity]),
     ConnectedAccountModule,
     OAuth2ClientManagerModule,
+    InvoiceModule,
   ],
   providers: [
     SyncJobVisitsToCalendarCronJob,
     SyncJobVisitsToCalendarJob,
     JobVisitCalendarSyncService,
+    GoogleCalendarCompletionHandlerService,
     SyncJobVisitsToCalendarCronCommand,
   ],
-  exports: [JobVisitCalendarSyncService],
+  exports: [JobVisitCalendarSyncService, GoogleCalendarCompletionHandlerService],
 })
 export class CalendarJobsModule implements OnApplicationBootstrap {
   private readonly logger = new Logger(CalendarJobsModule.name);

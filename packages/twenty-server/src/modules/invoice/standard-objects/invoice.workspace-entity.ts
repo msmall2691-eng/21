@@ -46,6 +46,9 @@ export class InvoiceWorkspaceEntity {
   serviceAgreement: EntityRelation<ServiceAgreementWorkspaceEntity> | null;
   serviceAgreementId: string | null; // If recurring service
 
+  // Google Calendar integration
+  googleCalendarEventId: string | null; // Link to Google Calendar event ID
+
   // Billing details
   customer: EntityRelation<PersonWorkspaceEntity> | null;
   customerId: string | null; // Who to bill
