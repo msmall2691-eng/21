@@ -14,6 +14,7 @@ import { CheckCustomDomainValidRecordsCronCommand } from 'src/engine/core-module
 import { TrashCleanupCronCommand } from 'src/engine/trash-cleanup/commands/trash-cleanup.cron.command';
 import { CleanOnboardingWorkspacesCronCommand } from 'src/engine/workspace-manager/workspace-cleaner/commands/clean-onboarding-workspaces.cron.command';
 import { CleanSuspendedWorkspacesCronCommand } from 'src/engine/workspace-manager/workspace-cleaner/commands/clean-suspended-workspaces.cron.command';
+import { SyncJobVisitsToCalendarCronCommand } from 'src/modules/calendar/commands/sync-job-visits-to-calendar.cron.command';
 import { CalendarEventListFetchCronCommand } from 'src/modules/calendar/calendar-event-import-manager/crons/commands/calendar-event-list-fetch.cron.command';
 import { CalendarEventsImportCronCommand } from 'src/modules/calendar/calendar-event-import-manager/crons/commands/calendar-import.cron.command';
 import { CalendarOngoingStaleCronCommand } from 'src/modules/calendar/calendar-event-import-manager/crons/commands/calendar-ongoing-stale.cron.command';
@@ -44,6 +45,7 @@ export class CronRegisterAllCommand extends CommandRunner {
     private readonly calendarEventsImportCronCommand: CalendarEventsImportCronCommand,
     private readonly calendarOngoingStaleCronCommand: CalendarOngoingStaleCronCommand,
     private readonly calendarRelaunchFailedCalendarChannelsCronCommand: CalendarRelaunchFailedCalendarChannelsCronCommand,
+    private readonly syncJobVisitsToCalendarCronCommand: SyncJobVisitsToCalendarCronCommand,
 
     private readonly workflowCronTriggerCronCommand: WorkflowCronTriggerCronCommand,
     private readonly workflowRunEnqueueCronCommand: WorkflowRunEnqueueCronCommand,
@@ -126,6 +128,10 @@ export class CronRegisterAllCommand extends CommandRunner {
       {
         name: 'CalendarRelaunchFailedCalendarChannels',
         command: this.calendarRelaunchFailedCalendarChannelsCronCommand,
+      },
+      {
+        name: 'SyncJobVisitsToCalendar',
+        command: this.syncJobVisitsToCalendarCronCommand,
       },
       {
         name: 'CheckCustomDomainValidRecords',
