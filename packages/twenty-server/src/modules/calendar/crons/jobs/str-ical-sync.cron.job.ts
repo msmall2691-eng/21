@@ -1,10 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { WorkspaceActivationStatus } from 'twenty-shared/workspace';
 
 import { MessageQueueService } from 'src/engine/core-modules/message-queue/services/message-queue.service';
 import { InjectMessageQueue } from 'src/engine/core-modules/message-queue/decorators/message-queue.decorator';
 import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
-import { WorkspaceService } from 'src/engine/core-modules/workspace/services/workspace.service';
+import { WorkspaceEntity } from 'src/engine/core-modules/workspace/workspace.entity';
 
 /**
  * Cron job to periodically sync STR (Short-Term Rental) iCal feeds.
@@ -23,7 +27,8 @@ export class StrIcalSyncCronJob {
   private readonly logger = new Logger(StrIcalSyncCronJob.name);
 
   constructor(
-    private readonly workspaceService: WorkspaceService,
+    @InjectRepository(WorkspaceEntity)
+    private readonly workspaceRepository: Repository<WorkspaceEntity>,
     @InjectMessageQueue(MessageQueue.calendarQueue)
     private readonly messageQueueService: MessageQueueService,
   ) {}
@@ -33,8 +38,11 @@ export class StrIcalSyncCronJob {
     try {
       this.logger.log('Starting STR iCal sync cron job');
 
-      // Get all active workspaces
-      const workspaces = await this.workspaceService.find();
+      // Get all active workspaces via the repository — avoids importing the
+      // huge WorkspaceModule (and the DI graph it drags in) into this module.
+      const workspaces = await this.workspaceRepository.find({
+        where: { activationStatus: WorkspaceActivationStatus.ACTIVE },
+      });
 
       for (const workspace of workspaces) {
         try {
