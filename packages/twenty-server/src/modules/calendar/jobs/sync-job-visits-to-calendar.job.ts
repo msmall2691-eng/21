@@ -162,6 +162,7 @@ export class SyncJobVisitsToCalendarJob {
           );
 
           let successCount = 0;
+          let skippedCount = 0;
           let failureCount = 0;
 
           for (const jobVisit of unsyncedJobVisits) {
@@ -179,7 +180,7 @@ export class SyncJobVisitsToCalendarJob {
 
               const propertyAddress = this.buildAddressString(property);
 
-              const { calendarEventId } =
+              const result =
                 await this.jobVisitCalendarSyncService.createCalendarEventForJobVisit(
                   {
                     jobVisitId: jobVisit.id,
@@ -193,8 +194,16 @@ export class SyncJobVisitsToCalendarJob {
                   },
                 );
 
+              // null => sync was not possible (e.g. no connected Google
+              // account). Leave calendarEventId NULL so the next cron
+              // tick retries this record once the user connects.
+              if (result === null) {
+                skippedCount++;
+                continue;
+              }
+
               await jobVisitRepository.update(jobVisit.id, {
-                calendarEventId,
+                calendarEventId: result.calendarEventId,
               });
 
               successCount++;
@@ -208,12 +217,13 @@ export class SyncJobVisitsToCalendarJob {
                 }`,
               );
               // Swallow per-visit errors so one bad record doesn't
-              // block the rest of the batch.
+              // block the rest of the batch. calendarEventId stays
+              // NULL, so the record is retried next cycle.
             }
           }
 
           this.logger.log(
-            `JobVisit -> Calendar sync complete for workspace ${workspaceId}: ${successCount} synced, ${failureCount} failed`,
+            `JobVisit -> Calendar sync complete for workspace ${workspaceId}: ${successCount} synced, ${skippedCount} skipped, ${failureCount} failed`,
           );
         },
         authContext,

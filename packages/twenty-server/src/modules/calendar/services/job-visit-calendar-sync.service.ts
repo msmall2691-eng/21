@@ -114,21 +114,24 @@ export class JobVisitCalendarSyncService {
   }): Promise<{
     calendarEventId: string;
     eventLink: string;
-  }> {
-    try {
-      // Get Megan's Google Calendar connected account
-      const connectedAccount = await this.getGoogleCalendarConnectedAccount(
-        input.workspaceId,
-        input.workspaceMemberId,
+  } | null> {
+    // Get Megan's Google Calendar connected account
+    const connectedAccount = await this.getGoogleCalendarConnectedAccount(
+      input.workspaceId,
+      input.workspaceMemberId,
+    );
+
+    if (!connectedAccount) {
+      // Return null so the caller leaves calendarEventId NULL on the JobVisit
+      // and the next cron tick retries. Previously this returned a fake
+      // "cal_<uuid>" id which poisoned the record and prevented retries.
+      this.logger.warn(
+        `No Google Calendar connected account found for workspace member ${input.workspaceMemberId} - JobVisit ${input.jobVisitId} will be retried next cycle`,
       );
+      return null;
+    }
 
-      if (!connectedAccount) {
-        this.logger.warn(
-          `No Google Calendar connected account found for workspace member ${input.workspaceMemberId}`,
-        );
-        return this.createPlaceholderEvent(input.jobVisitId);
-      }
-
+    try {
       // Create event in Google Calendar
       const googleCalendarEvent = await this.createGoogleCalendarEvent(
         connectedAccount,
@@ -152,11 +155,14 @@ export class JobVisitCalendarSyncService {
         eventLink: `https://calendar.google.com/calendar/u/0/r/eventedit/${googleCalendarEvent.id}`,
       };
     } catch (error) {
+      // Surface the real error to the caller so per-visit failures are
+      // logged with context and the record stays unsynced (retryable).
       this.logger.error(
-        `Failed to create calendar event for JobVisit ${input.jobVisitId}: ${error}`,
+        `Failed to create calendar event for JobVisit ${input.jobVisitId}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
       );
-      // Return placeholder on error to avoid breaking the iCal sync flow
-      return this.createPlaceholderEvent(input.jobVisitId);
+      throw error;
     }
   }
 
@@ -412,19 +418,6 @@ export class JobVisitCalendarSyncService {
       },
       authContext,
     );
-  }
-
-  /**
-   * Create placeholder event when Google Calendar integration is unavailable.
-   */
-  private createPlaceholderEvent(jobVisitId: string): {
-    calendarEventId: string;
-    eventLink: string;
-  } {
-    return {
-      calendarEventId: `cal_${jobVisitId}`,
-      eventLink: `https://calendar.google.com/calendar/u/0/r/eventedit/${jobVisitId}`,
-    };
   }
 
   /**
