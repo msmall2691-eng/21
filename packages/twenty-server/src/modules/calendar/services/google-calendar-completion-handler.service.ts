@@ -83,41 +83,43 @@ export class GoogleCalendarCompletionHandlerService {
     jobVisit: JobVisitWorkspaceEntity,
     workspaceId: string,
   ): Promise<void> {
-    // Check if an invoice already exists for this JobVisit
+    // Get the Google Calendar event ID from the calendar event association
+    let googleCalendarEventId: string | undefined;
+    if (jobVisit.calendarEventId) {
+      const associationRepository =
+        await this.globalWorkspaceOrmManager.getRepository(
+          workspaceId,
+          'calendarChannelEventAssociation',
+        );
+
+      const association = await associationRepository.findOne({
+        where: { calendarEventId: jobVisit.calendarEventId },
+      });
+
+      if (association && (association as any).eventExternalId) {
+        googleCalendarEventId = (association as any).eventExternalId;
+      }
+    }
+
+    // Check if an invoice already exists for this Google Calendar event
     const invoiceRepository =
       await this.globalWorkspaceOrmManager.getRepository<InvoiceWorkspaceEntity>(
         workspaceId,
         'invoice',
       );
 
-    const existingInvoice = await invoiceRepository.findOne({
-      where: {
-        googleCalendarEventId: jobVisit.id,
-      },
-    });
-
-    if (existingInvoice) {
-      this.logger.debug(
-        `Invoice already exists for JobVisit ${jobVisit.id}. Skipping.`,
-      );
-      return;
-    }
-
-    // Get the calendar event to extract Google Calendar ID
-    let googleCalendarEventId: string | undefined;
-    if (jobVisit.calendarEventId) {
-      const calendarEventRepository =
-        await this.globalWorkspaceOrmManager.getRepository(
-          workspaceId,
-          'calendarEvent',
-        );
-
-      const calendarEvent = await calendarEventRepository.findOne({
-        where: { id: jobVisit.calendarEventId },
+    if (googleCalendarEventId) {
+      const existingInvoice = await invoiceRepository.findOne({
+        where: {
+          googleCalendarEventId,
+        },
       });
 
-      if (calendarEvent && (calendarEvent as any).externalId) {
-        googleCalendarEventId = (calendarEvent as any).externalId;
+      if (existingInvoice) {
+        this.logger.debug(
+          `Invoice already exists for Google Calendar event ${googleCalendarEventId}. Skipping.`,
+        );
+        return;
       }
     }
 
