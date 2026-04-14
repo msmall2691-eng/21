@@ -59,6 +59,10 @@
       {
         "include": "engine/metadata-modules/ai/ai-models/ai-providers.json",
         "outDir": "dist"
+      },
+      {
+        "include": "engine/core-modules/i18n/locales/generated/**",
+        "outDir": "dist/engine/core-modules/i18n/locales/generated"
       }
     ]
   },
