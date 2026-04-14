@@ -35,7 +35,7 @@ export class SyncJobVisitsToCalendarCronJob {
   constructor(
     @InjectRepository(WorkspaceEntity)
     private readonly workspaceRepository: Repository<WorkspaceEntity>,
-    @InjectMessageQueue(MessageQueue.generalQueue)
+    @InjectMessageQueue(MessageQueue.calendarQueue)
     private readonly messageQueueService: MessageQueueService,
     @InjectDataSource()
     private readonly coreDataSource: DataSource,
@@ -79,7 +79,7 @@ export class SyncJobVisitsToCalendarCronJob {
  * Runs once per workspace per cron cycle.
  */
 @Processor({
-  queueName: MessageQueue.generalQueue,
+  queueName: MessageQueue.calendarQueue,
 })
 export class SyncJobVisitsToCalendarJob {
   private readonly logger = new Logger(SyncJobVisitsToCalendarJob.name);
