@@ -7,6 +7,7 @@ import { CalendarEventParticipantManagerModule } from 'src/modules/calendar/cale
 import { CalendarCommonModule } from 'src/modules/calendar/common/calendar-common.module';
 import { JobVisitCalendarSyncService } from 'src/modules/calendar/services/job-visit-calendar-sync.service';
 import { ConnectedAccountModule } from 'src/modules/connected-account/connected-account.module';
+import { OAuth2ClientManagerModule } from 'src/modules/connected-account/oauth2-client-manager/oauth2-client-manager.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ConnectedAccountModule } from 'src/modules/connected-account/connected-
     CalendarEventParticipantManagerModule,
     CalendarCommonModule,
     ConnectedAccountModule,
+    OAuth2ClientManagerModule,
   ],
   providers: [JobVisitCalendarSyncService],
   exports: [JobVisitCalendarSyncService],
