@@ -3,6 +3,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { GlobalWorkspaceOrmManager } from 'src/engine/twenty-orm/global-workspace-datasource/global-workspace-orm.manager';
 import { buildSystemAuthContext } from 'src/engine/twenty-orm/utils/build-system-auth-context.util';
 import { type InvoiceWorkspaceEntity } from '../standard-objects/invoice.workspace-entity';
+import { MessageQueueService } from 'src/engine/core-modules/message-queue/services/message-queue.service';
+import { InjectMessageQueue } from 'src/engine/core-modules/message-queue/decorators/message-queue.decorator';
+import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
 
 export type SendInvoiceNotificationInput = {
   invoiceId: string;
@@ -18,6 +21,8 @@ export class InvoiceNotificationService {
 
   constructor(
     private readonly globalWorkspaceOrmManager: GlobalWorkspaceOrmManager,
+    @InjectMessageQueue(MessageQueue.generalQueue)
+    private readonly messageQueueService: MessageQueueService,
   ) {}
 
   async sendInvoiceNotification(
@@ -80,21 +85,52 @@ export class InvoiceNotificationService {
     invoice: InvoiceWorkspaceEntity,
     email: string,
   ): Promise<void> {
-    // TODO: Implement email sending via SendGrid or Gmail API
-    this.logger.log(
-      `[TODO] Would send invoice ${invoice.invoiceNumber} to ${email}`,
-    );
-    // For now, just log that we would send it
+    try {
+      // Queue email job for async processing
+      await this.messageQueueService.add('send-invoice-email', {
+        invoiceId: invoice.id,
+        invoiceNumber: invoice.invoiceNumber,
+        amount: invoice.amount,
+        currency: invoice.currency,
+        dueDate: invoice.dueDate,
+        recipientEmail: email,
+        subject: `Invoice ${invoice.invoiceNumber} from Maine Cleaning Co`,
+      });
+
+      this.logger.log(
+        `Queued email notification for invoice ${invoice.invoiceNumber} to ${email}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue email notification: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw error;
+    }
   }
 
   private async sendSmsInvoice(
     invoice: InvoiceWorkspaceEntity,
     phone: string,
   ): Promise<void> {
-    // TODO: Implement SMS sending via Twilio
-    this.logger.log(
-      `[TODO] Would send invoice ${invoice.invoiceNumber} SMS to ${phone}`,
-    );
-    // For now, just log that we would send it
+    try {
+      // Queue SMS job for async processing via Twilio
+      await this.messageQueueService.add('send-invoice-sms', {
+        invoiceId: invoice.id,
+        invoiceNumber: invoice.invoiceNumber,
+        amount: invoice.amount,
+        currency: invoice.currency,
+        recipientPhone: phone,
+        message: `Invoice ${invoice.invoiceNumber} from Maine Cleaning Co: $${(invoice.amount / 100).toFixed(2)} due ${new Date(invoice.dueDate).toLocaleDateString()}`,
+      });
+
+      this.logger.log(
+        `Queued SMS notification for invoice ${invoice.invoiceNumber} to ${phone}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue SMS notification: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw error;
+    }
   }
 }
