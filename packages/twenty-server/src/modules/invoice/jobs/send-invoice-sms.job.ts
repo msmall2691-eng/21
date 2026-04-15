@@ -3,6 +3,7 @@ import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 
 import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
+import { SmsService } from 'src/modules/messaging/sms-manager/services/sms.service';
 
 export type SendInvoiceSmsJobData = {
   invoiceId: string;
@@ -11,38 +12,36 @@ export type SendInvoiceSmsJobData = {
   currency: string;
   recipientPhone: string;
   message: string;
+  workspaceId: string;
+  personId?: string;
 };
 
 @Injectable()
-@Processor(MessageQueue.emailQueue)
+@Processor(MessageQueue.smsQueue)
 export class SendInvoiceSmsJob {
   private readonly logger = new Logger(SendInvoiceSmsJob.name);
 
+  constructor(private readonly smsService: SmsService) {}
+
   @Process('send-invoice-sms')
   async handleSendInvoiceSms(job: Job<SendInvoiceSmsJobData>): Promise<void> {
-    const { invoiceNumber, recipientPhone, message } = job.data;
+    const { invoiceNumber, recipientPhone, message, workspaceId, personId } = job.data;
 
     try {
-      this.logger.log(
-        `Sending invoice SMS: ${invoiceNumber} to ${recipientPhone}`,
-      );
+      if (!workspaceId) {
+        throw new Error('workspaceId is required');
+      }
 
-      // TODO: Implement actual SMS sending via Twilio
-      // For now, log that we would send it
-      this.logger.log(
-        `[TODO] SMS invoice ${invoiceNumber} to ${recipientPhone}: "${message}"`,
-      );
-
-      // In production, use:
-      // const twilio = require('twilio')(accountSid, authToken);
-      // await twilio.messages.create({
-      //   body: message,
-      //   from: process.env.TWILIO_PHONE_NUMBER,
-      //   to: recipientPhone
-      // });
+      // Send SMS via Twilio through SmsService
+      await this.smsService.sendSms({
+        phoneNumber: recipientPhone,
+        personId: personId || 'system',
+        body: message,
+        workspaceId,
+      });
 
       this.logger.log(
-        `Invoice ${invoiceNumber} SMS notification completed`,
+        `Invoice SMS sent: ${invoiceNumber} to ${recipientPhone}`,
       );
     } catch (error) {
       this.logger.error(

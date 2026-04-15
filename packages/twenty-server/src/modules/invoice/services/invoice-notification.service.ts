@@ -22,7 +22,9 @@ export class InvoiceNotificationService {
   constructor(
     private readonly globalWorkspaceOrmManager: GlobalWorkspaceOrmManager,
     @InjectMessageQueue(MessageQueue.emailQueue)
-    private readonly messageQueueService: MessageQueueService,
+    private readonly emailQueueService: MessageQueueService,
+    @InjectMessageQueue(MessageQueue.smsQueue)
+    private readonly smsQueueService: MessageQueueService,
   ) {}
 
   async sendInvoiceNotification(
@@ -51,12 +53,12 @@ export class InvoiceNotificationService {
 
       // Send email
       if ((input.method === 'email' || input.method === 'both') && customerEmail) {
-        await this.sendEmailInvoice(invoice, customerEmail);
+        await this.sendEmailInvoice(invoice, customerEmail, input.workspaceId);
       }
 
       // Send SMS
       if ((input.method === 'sms' || input.method === 'both') && customerPhone) {
-        await this.sendSmsInvoice(invoice, customerPhone);
+        await this.sendSmsInvoice(invoice, customerPhone, input.workspaceId);
       }
 
       // Update invoice status to SENT
@@ -84,10 +86,11 @@ export class InvoiceNotificationService {
   private async sendEmailInvoice(
     invoice: InvoiceWorkspaceEntity,
     email: string,
+    workspaceId: string,
   ): Promise<void> {
     try {
       // Queue email job for async processing
-      await this.messageQueueService.add('send-invoice-email', {
+      await this.emailQueueService.add('send-invoice-email', {
         invoiceId: invoice.id,
         invoiceNumber: invoice.invoiceNumber,
         amount: invoice.amount,
@@ -111,16 +114,18 @@ export class InvoiceNotificationService {
   private async sendSmsInvoice(
     invoice: InvoiceWorkspaceEntity,
     phone: string,
+    workspaceId: string,
   ): Promise<void> {
     try {
       // Queue SMS job for async processing via Twilio
-      await this.messageQueueService.add('send-invoice-sms', {
+      await this.smsQueueService.add('send-invoice-sms', {
         invoiceId: invoice.id,
         invoiceNumber: invoice.invoiceNumber,
         amount: invoice.amount,
         currency: invoice.currency,
         recipientPhone: phone,
         message: `Invoice ${invoice.invoiceNumber} from Maine Cleaning Co: $${(invoice.amount / 100).toFixed(2)} due ${new Date(invoice.dueDate).toLocaleDateString()}`,
+        workspaceId,
       });
 
       this.logger.log(
