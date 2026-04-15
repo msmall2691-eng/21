@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 
 import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
-import { EmailDriverFactory } from 'src/engine/core-modules/email/email-driver.factory';
+import { EmailSenderService } from 'src/engine/core-modules/email/email-sender.service';
 import { TwentyConfigService } from 'src/engine/core-modules/twenty-config/twenty-config.service';
 
 export type SendInvoiceEmailJobData = {
@@ -22,7 +23,7 @@ export class SendInvoiceEmailJob {
   private readonly logger = new Logger(SendInvoiceEmailJob.name);
 
   constructor(
-    private readonly emailDriverFactory: EmailDriverFactory,
+    private readonly emailSenderService: EmailSenderService,
     private readonly twentyConfigService: TwentyConfigService,
   ) {}
 
@@ -31,12 +32,13 @@ export class SendInvoiceEmailJob {
     const { invoiceNumber, amount, recipientEmail, subject, dueDate } = job.data;
 
     try {
-      const emailDriver = this.emailDriverFactory.getCurrentDriver();
-      const fromEmail = this.twentyConfigService.get('EMAIL_FROM_ADDRESS') || 'noreply@mainecleaningco.com';
+      const fromEmail =
+        this.twentyConfigService.get('EMAIL_FROM_ADDRESS') ||
+        'noreply@mainecleaningco.com';
 
       const htmlBody = this.buildEmailHtml(invoiceNumber, amount, dueDate);
 
-      await emailDriver.send({
+      await this.emailSenderService.send({
         to: recipientEmail,
         from: fromEmail,
         subject,
@@ -55,7 +57,11 @@ export class SendInvoiceEmailJob {
     }
   }
 
-  private buildEmailHtml(invoiceNumber: string, amount: number, dueDate: string): string {
+  private buildEmailHtml(
+    invoiceNumber: string,
+    amount: number,
+    dueDate: string,
+  ): string {
     return `
       <html>
         <body style="font-family: Arial, sans-serif; color: #333;">
