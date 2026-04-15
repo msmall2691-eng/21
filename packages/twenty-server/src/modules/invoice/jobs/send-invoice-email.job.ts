@@ -31,7 +31,7 @@ export class SendInvoiceEmailJob {
     const { invoiceNumber, amount, recipientEmail, subject, dueDate } = job.data;
 
     try {
-      const emailDriver = this.emailDriverFactory.getDriver();
+      const emailDriver = this.emailDriverFactory.getCurrentDriver();
       const fromEmail = this.twentyConfigService.get('EMAIL_FROM_ADDRESS') || 'noreply@mainecleaningco.com';
 
       const htmlBody = this.buildEmailHtml(invoiceNumber, amount, dueDate);

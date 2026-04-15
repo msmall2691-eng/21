@@ -4,6 +4,7 @@ export const MESSAGE_QUEUE_PRIORITY = {
   [MessageQueue.billingQueue]: 1,
   [MessageQueue.entityEventsToDbQueue]: 1,
   [MessageQueue.emailQueue]: 1,
+  [MessageQueue.smsQueue]: 1,
   [MessageQueue.workflowQueue]: 2,
   [MessageQueue.webhookQueue]: 2,
   [MessageQueue.messagingQueue]: 2,
