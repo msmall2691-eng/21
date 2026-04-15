@@ -1,8 +1,14 @@
 import { useLingui } from '@lingui/react/macro';
 import { styled } from '@linaria/react';
+import { useMemo } from 'react';
+import { useQuery } from '@apollo/client/react';
 
+import { currentWorkspaceState } from '@/auth/states/currentWorkspaceState';
+import { GET_STR_PROPERTIES } from '@/calendar/graphql/queries/getStrProperties';
 import { SettingsPageContainer } from '@/settings/components/SettingsPageContainer';
 import { SubMenuTopBarContainer } from '@/ui/layout/page/components/SubMenuTopBarContainer';
+import { useUpdateOneRecord } from '@/object-record/hooks/useUpdateOneRecord';
+import { useAtomStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomStateValue';
 import { SettingsPath } from 'twenty-shared/types';
 import { getSettingsPath } from 'twenty-shared/utils';
 import { H2Title } from 'twenty-ui/display';
@@ -41,6 +47,35 @@ const StyledMainContent = styled.div`
  */
 export const SettingsCalendarStrProperties = () => {
   const { t } = useLingui();
+  const currentWorkspace = useAtomStateValue(currentWorkspaceState);
+  const { updateOneRecord } = useUpdateOneRecord();
+
+  const { data, loading, error, refetch } = useQuery<{
+    properties: {
+      edges: Array<{
+        node: {
+          id: string;
+          name: string;
+          propertyType: string | null;
+          icalSyncUrl: {
+            primaryLinkUrl: string | null;
+            primaryLinkLabel: string | null;
+            secondaryLinks: Array<{ url: string | null; label: string | null }> | null;
+          } | null;
+          person: {
+            id: string;
+            name: { firstName: string | null; lastName: string | null } | null;
+          } | null;
+          company: { id: string; name: string } | null;
+        };
+      }>;
+    };
+  }>(GET_STR_PROPERTIES);
+
+  const properties = useMemo(
+    () => data?.properties?.edges?.map((edge) => edge.node) ?? [],
+    [data],
+  );
 
   return (
     <SubMenuTopBarContainer
@@ -66,7 +101,42 @@ export const SettingsCalendarStrProperties = () => {
             <StrWorkflowNav activeSection="properties" />
 
             <StyledMainContent>
-              <StrPropertiesDashboard />
+              {error && (
+                <div className="rounded bg-red-50 p-3 text-sm text-red-700">
+                  Failed to load properties: {error.message}
+                </div>
+              )}
+
+              {loading && (
+                <div className="rounded bg-gray-50 p-3 text-sm text-gray-700">
+                  Loading STR properties...
+                </div>
+              )}
+
+              <StrPropertiesDashboard
+                properties={properties}
+                workspaceId={currentWorkspace?.id}
+                onSyncComplete={() => {
+                  void refetch();
+                }}
+                onUpdatePropertyIcalUrl={async (propertyId, icalUrl) => {
+                  await updateOneRecord({
+                    objectNameSingular: 'property',
+                    idToUpdate: propertyId,
+                    updateOneRecordInput: {
+                      icalSyncUrl: icalUrl
+                        ? {
+                            primaryLinkUrl: icalUrl,
+                            primaryLinkLabel: 'STR iCal',
+                            secondaryLinks: [],
+                          }
+                        : null,
+                    },
+                  });
+
+                  await refetch();
+                }}
+              />
 
               <div className="mt-8 rounded bg-blue-50 p-4 text-sm text-blue-900">
                 <h3 className="font-semibold">How it works:</h3>
