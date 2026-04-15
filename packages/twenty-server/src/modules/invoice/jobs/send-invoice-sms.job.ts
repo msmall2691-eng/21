@@ -1,8 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Processor, Process } from '@nestjs/bull';
-import { Job } from 'bull';
-
-import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
 
 export type SendInvoiceSmsJobData = {
   invoiceId: string;
@@ -14,13 +10,11 @@ export type SendInvoiceSmsJobData = {
 };
 
 @Injectable()
-@Processor(MessageQueue.generalQueue)
 export class SendInvoiceSmsJob {
   private readonly logger = new Logger(SendInvoiceSmsJob.name);
 
-  @Process('send-invoice-sms')
-  async handleSendInvoiceSms(job: Job<SendInvoiceSmsJobData>): Promise<void> {
-    const { invoiceNumber, recipientPhone, message } = job.data;
+  async handleSendInvoiceSms(data: SendInvoiceSmsJobData): Promise<void> {
+    const { invoiceNumber, recipientPhone, message } = data;
 
     try {
       this.logger.log(
@@ -32,14 +26,6 @@ export class SendInvoiceSmsJob {
       this.logger.log(
         `[TODO] SMS invoice ${invoiceNumber} to ${recipientPhone}: "${message}"`,
       );
-
-      // In production, use:
-      // const twilio = require('twilio')(accountSid, authToken);
-      // await twilio.messages.create({
-      //   body: message,
-      //   from: process.env.TWILIO_PHONE_NUMBER,
-      //   to: recipientPhone
-      // });
 
       this.logger.log(
         `Invoice ${invoiceNumber} SMS notification completed`,
