@@ -6,6 +6,7 @@ import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queu
 import { MessageQueueService } from 'src/engine/core-modules/message-queue/services/message-queue.service';
 import { WorkspaceEntity } from 'src/engine/core-modules/workspace/workspace.entity';
 import { SyncJobVisitsToCalendarCronCommand } from 'src/modules/calendar/commands/sync-job-visits-to-calendar.cron.command';
+import { CalendarBackfillController } from 'src/modules/calendar/controllers/calendar-backfill.controller';
 import {
   SYNC_JOB_VISITS_TO_CALENDAR_CRON_PATTERN,
   SyncJobVisitsToCalendarCronJob,
@@ -21,6 +22,7 @@ import { OAuth2ClientManagerModule } from 'src/modules/connected-account/oauth2-
     ConnectedAccountModule,
     OAuth2ClientManagerModule,
   ],
+  controllers: [CalendarBackfillController],
   providers: [
     SyncJobVisitsToCalendarCronJob,
     SyncJobVisitsToCalendarJob,
