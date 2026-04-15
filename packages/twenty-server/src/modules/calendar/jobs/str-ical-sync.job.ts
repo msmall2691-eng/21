@@ -1,8 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Processor, Process } from '@nestjs/bull';
-import { Job } from 'bull';
 
-import { MessageQueue } from 'src/engine/core-modules/message-queue/message-queue.constants';
 import { StrIcalSyncService } from 'src/modules/calendar/services/str-ical-sync.service';
 
 export type StrIcalSyncJobData = {
@@ -22,15 +19,13 @@ export type StrIcalSyncJobData = {
  * - Property iCal feed URL updates
  */
 @Injectable()
-@Processor(MessageQueue.generalQueue)
 export class StrIcalSyncJob {
   private readonly logger = new Logger(StrIcalSyncJob.name);
 
   constructor(private readonly strIcalSyncService: StrIcalSyncService) {}
 
-  @Process('str-ical-sync')
-  async handleStrIcalSync(job: Job<StrIcalSyncJobData>): Promise<void> {
-    const { workspaceId, propertyId } = job.data;
+  async handleStrIcalSync(data: StrIcalSyncJobData): Promise<void> {
+    const { workspaceId, propertyId } = data;
 
     try {
       this.logger.log(
