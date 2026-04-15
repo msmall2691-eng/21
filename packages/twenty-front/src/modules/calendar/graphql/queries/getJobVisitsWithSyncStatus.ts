@@ -18,6 +18,7 @@ export const GET_JOB_VISITS_WITH_SYNC_STATUS = gql`
           property {
             id
             name
+            propertyType
             address
           }
           staffMember {

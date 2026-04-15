@@ -18,7 +18,7 @@ type JobVisit = {
 };
 
 type JobVisitsListProps = {
-  jobVisits: JobVisit[];
+  jobVisits?: JobVisit[];
   showGrouping?: boolean;
 };
 
@@ -44,7 +44,7 @@ const PROPERTY_TYPES = {
  * - Calendar sync status
  */
 export const JobVisitsListWithTypes = ({
-  jobVisits,
+  jobVisits = [],
   showGrouping = true,
 }: JobVisitsListProps) => {
   const groupedVisits = useMemo(() => {

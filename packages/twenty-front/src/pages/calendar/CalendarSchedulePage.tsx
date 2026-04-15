@@ -1,7 +1,11 @@
 import { PageContainer } from '@/ui/layout/page/components/PageContainer';
 import { JobVisitsListWithTypes } from '@/calendar/components/job-visits-list-with-types.component';
+import { GET_JOB_VISITS_WITH_SYNC_STATUS } from '@/calendar/graphql/queries/getJobVisitsWithSyncStatus';
+import { useMyConnectedAccounts } from '@/settings/accounts/hooks/useMyConnectedAccounts';
 import { StrWorkflowNav } from '@/calendar/components/str-workflow-nav.component';
+import { useQuery } from '@apollo/client/react';
 import { styled } from '@linaria/react';
+import { useMemo } from 'react';
 
 const StyledPageHeader = styled.div`
   margin-bottom: 2rem;
@@ -94,6 +98,42 @@ const StyledInfoBoxTitle = styled.h3`
  * - See customer information
  */
 export const CalendarSchedulePage = () => {
+  const { data, loading, error, refetch } = useQuery<{
+    jobVisits: {
+      edges: Array<{
+        node: {
+          id: string;
+          name: string;
+          scheduledDate: string;
+          completedDate: string | null;
+          status: string;
+          calendarEventId: string | null;
+          property: {
+            id: string;
+            name: string;
+            propertyType: string | null;
+          } | null;
+          calendarEvent: {
+            id: string;
+            title: string;
+          } | null;
+        };
+      }>;
+    };
+  }>(GET_JOB_VISITS_WITH_SYNC_STATUS);
+  const { accounts: connectedAccounts } = useMyConnectedAccounts();
+
+  const jobVisits = useMemo(
+    () => data?.jobVisits?.edges?.map((edge) => edge.node) ?? [],
+    [data],
+  );
+
+  const googleCalendarConnected = connectedAccounts.some(
+    (account) => account.provider === 'google',
+  );
+  const syncedVisits = jobVisits.filter((visit) => visit.calendarEventId).length;
+  const pendingVisits = Math.max(jobVisits.length - syncedVisits, 0);
+
   return (
     <PageContainer>
       <StyledPageHeader>
@@ -109,7 +149,41 @@ export const CalendarSchedulePage = () => {
         <StrWorkflowNav activeSection="schedule" />
 
         <StyledMainContent>
-          <JobVisitsListWithTypes />
+          <div className="rounded border border-gray-200 bg-white p-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="text-base font-semibold">Google Calendar Sync</h2>
+              <button
+                onClick={() => {
+                  void refetch();
+                }}
+                className="rounded border border-gray-300 px-3 py-1 text-xs hover:bg-gray-50"
+              >
+                Refresh
+              </button>
+            </div>
+            <p className="text-sm text-gray-600">
+              {googleCalendarConnected
+                ? '✅ Google Calendar account connected. Job visits sync every 30 minutes.'
+                : '⚠️ No Google Calendar account connected yet. Go to Settings → Accounts to connect Google.'}
+            </p>
+            <p className="mt-2 text-xs text-gray-500">
+              Synced: {syncedVisits} · Pending: {pendingVisits}
+            </p>
+          </div>
+
+          {error && (
+            <div className="rounded bg-red-50 p-3 text-sm text-red-700">
+              Failed to load JobVisits: {error.message}
+            </div>
+          )}
+
+          {loading && (
+            <div className="rounded bg-gray-50 p-3 text-sm text-gray-700">
+              Loading schedule...
+            </div>
+          )}
+
+          <JobVisitsListWithTypes jobVisits={jobVisits} />
 
           <StyledPropertyTypeList>
             <StyledPropertyTypeItem>
