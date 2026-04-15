@@ -25,8 +25,7 @@ export class InvoiceNotificationService {
     private readonly messageQueueService: MessageQueueService,
   ) {}
 
-  async sendInvoiceNotification(
-    input: SendInvoiceNotificationInput,
+  async sendInvoiceNotification(    input: SendInvoiceNotificationInput,
   ): Promise<{ success: boolean; message: string }> {
     const authContext = buildSystemAuthContext(input.workspaceId);
 
