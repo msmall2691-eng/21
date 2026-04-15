@@ -17,6 +17,8 @@ import { GlobalWorkspaceOrmManager } from 'src/engine/twenty-orm/global-workspac
 import { buildSystemAuthContext } from 'src/engine/twenty-orm/utils/build-system-auth-context.util';
 import { type JobVisitWorkspaceEntity } from 'src/modules/job-visit/standard-objects/job-visit.workspace-entity';
 import { type PropertyWorkspaceEntity } from 'src/modules/property/standard-objects/property.workspace-entity';
+import { type PersonWorkspaceEntity } from 'src/modules/person/standard-objects/person.workspace-entity';
+import { type CompanyWorkspaceEntity } from 'src/modules/company/standard-objects/company.workspace-entity';
 import { type WorkspaceMemberWorkspaceEntity } from 'src/modules/workspace-member/standard-objects/workspace-member.workspace-entity';
 import { JobVisitCalendarSyncService } from 'src/modules/calendar/services/job-visit-calendar-sync.service';
 
@@ -141,12 +143,13 @@ export class SyncJobVisitsToCalendarJob {
             );
 
           // Find JobVisits that are scheduled but not yet on the calendar.
+          // Load property + its person/company so we can compute client name.
           const unsyncedJobVisits = await jobVisitRepository.find({
             where: {
               calendarEventId: IsNull(),
               scheduledDate: Not(IsNull()),
             },
-            relations: ['property'],
+            relations: ['property', 'property.person', 'property.company'],
             take: 100, // cap per-cycle to avoid quota spikes
           });
 
@@ -180,14 +183,18 @@ export class SyncJobVisitsToCalendarJob {
 
               const propertyAddress = this.buildAddressString(property);
 
+              const clientName = this.buildClientName(property);
+
               const result =
                 await this.jobVisitCalendarSyncService.createCalendarEventForJobVisit(
                   {
                     jobVisitId: jobVisit.id,
                     propertyName,
                     propertyAddress,
-                    checkoutDate: new Date(jobVisit.scheduledDate),
-                    guestNote: jobVisit.notes,
+                    clientName,
+                    scheduledDate: new Date(jobVisit.scheduledDate),
+                    durationMinutes: jobVisit.duration ?? null,
+                    notes: jobVisit.notes ?? null,
                     icalUid: null,
                     workspaceId,
                     workspaceMemberId: workspaceMember.id,
@@ -259,5 +266,39 @@ export class SyncJobVisitsToCalendarJob {
       .filter((part) => part.length > 0);
 
     return parts.length > 0 ? parts.join(', ') : null;
+  }
+
+  /**
+   * Resolve the display name for the client attached to this property.
+   *
+   * Residential properties link to a Person (`property.person.name` has
+   * firstName / lastName); commercial properties link to a Company
+   * (`property.company.name` is a single string). Returns null if neither
+   * is set so the service layer can fall back to property name in the
+   * event title.
+   */
+  private buildClientName(
+    property: PropertyWorkspaceEntity | null,
+  ): string | null {
+    if (!property) {
+      return null;
+    }
+
+    const person = property.person as PersonWorkspaceEntity | null;
+    if (person?.name) {
+      const first = (person.name.firstName ?? '').trim();
+      const last = (person.name.lastName ?? '').trim();
+      const full = `${first} ${last}`.trim();
+      if (full.length > 0) {
+        return full;
+      }
+    }
+
+    const company = property.company as CompanyWorkspaceEntity | null;
+    if (company?.name && company.name.trim().length > 0) {
+      return company.name.trim();
+    }
+
+    return null;
   }
 }
