@@ -24,7 +24,7 @@ export class StrIcalSyncCronJob {
 
   constructor(
     private readonly workspaceService: WorkspaceService,
-    @InjectMessageQueue(MessageQueue.generalQueue)
+    @InjectMessageQueue(MessageQueue.calendarQueue)
     private readonly messageQueueService: MessageQueueService,
   ) {}
 
@@ -34,30 +34,3 @@ export class StrIcalSyncCronJob {
       this.logger.log('Starting STR iCal sync cron job');
 
       // Get all active workspaces
-      const workspaces = await this.workspaceService.find();
-
-      for (const workspace of workspaces) {
-        try {
-          // Queue job for each workspace
-          await this.messageQueueService.add('str-ical-sync', {
-            workspaceId: workspace.id,
-          });
-
-          this.logger.log(
-            `Queued STR iCal sync job for workspace ${workspace.id}`,
-          );
-        } catch (error) {
-          this.logger.error(
-            `Failed to queue STR iCal sync for workspace ${workspace.id}: ${error instanceof Error ? error.message : String(error)}`,
-          );
-        }
-      }
-
-      this.logger.log('STR iCal sync cron job completed');
-    } catch (error) {
-      this.logger.error(
-        `STR iCal sync cron job failed: ${error instanceof Error ? error.message : String(error)}`,
-      );
-    }
-  }
-}
