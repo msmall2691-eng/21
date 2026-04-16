@@ -20,6 +20,7 @@ export enum AppPath {
   Index = '/',
   Calendar = '/calendar',
   CleaningDashboard = '/cleaning-dashboard',
+  Messaging = '/messaging',
   TasksPage = '/objects/tasks',
   OpportunitiesPage = '/objects/opportunities',
 
