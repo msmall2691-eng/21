@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { WorkspaceModule } from 'src/engine/core-modules/workspace/workspace.module';
 import { StrIcalSyncService } from 'src/modules/calendar/services/str-ical-sync.service';
 import { StrIcalSyncJob } from 'src/modules/calendar/jobs/str-ical-sync.job';
 import { StrIcalSyncCronJob } from 'src/modules/calendar/crons/jobs/str-ical-sync.cron.job';
@@ -21,6 +22,7 @@ import { StrIcalSyncController } from 'src/modules/calendar/controllers/str-ical
  * - Customers can view cleanings in shared Google Calendar
  */
 @Module({
+  imports: [WorkspaceModule],
   controllers: [StrIcalSyncController],
   providers: [StrIcalSyncService, StrIcalSyncJob, StrIcalSyncCronJob],
   exports: [StrIcalSyncService],
