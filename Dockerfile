@@ -19,6 +19,18 @@ COPY ./packages/twenty-front-component-renderer/package.json /app/packages/twent
 COPY ./packages/twenty-sdk/package.json /app/packages/twenty-sdk/
 COPY ./packages/twenty-client-sdk/package.json /app/packages/twenty-client-sdk/
 
+# Workspace stubs required by yarn install (not built, just need package.json)
+COPY ./packages/twenty-utils/package.json /app/packages/twenty-utils/
+COPY ./packages/twenty-zapier/package.json /app/packages/twenty-zapier/
+COPY ./packages/twenty-website/package.json /app/packages/twenty-website/
+COPY ./packages/twenty-website-new/package.json /app/packages/twenty-website-new/
+COPY ./packages/twenty-docs/package.json /app/packages/twenty-docs/
+COPY ./packages/twenty-e2e-testing/package.json /app/packages/twenty-e2e-testing/
+COPY ./packages/twenty-cli/package.json /app/packages/twenty-cli/
+COPY ./packages/create-twenty-app/package.json /app/packages/create-twenty-app/
+COPY ./packages/twenty-oxlint-rules/package.json /app/packages/twenty-oxlint-rules/
+COPY ./packages/twenty-companion/package.json /app/packages/twenty-companion/
+
 RUN yarn && yarn cache clean && npx nx reset
 
 
