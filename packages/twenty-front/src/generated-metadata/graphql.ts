@@ -2480,8 +2480,7 @@ export enum MessageChannelSyncStatus {
 }
 
 export enum MessageChannelType {
-  EMAIL = 'EMAIL',
-  SMS = 'SMS'
+  EMAIL = 'EMAIL'
 }
 
 export enum MessageChannelVisibility {

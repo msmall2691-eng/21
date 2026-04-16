@@ -279,13 +279,6 @@ export const buildMessageChannelStandardFlatFieldMetadatas = ({
           position: 0,
           color: 'green',
         },
-        {
-          id: '20202020-fb11-4da3-80fd-b291cda8deb1',
-          value: MessageChannelType.SMS,
-          label: i18nLabel(msg`SMS`),
-          position: 1,
-          color: 'blue',
-        },
       ],
     },
     standardObjectMetadataRelatedEntityIds,

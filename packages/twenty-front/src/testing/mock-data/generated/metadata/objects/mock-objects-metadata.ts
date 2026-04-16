@@ -3912,13 +3912,6 @@ export const mockedStandardObjectMetadataQueryResult: ObjectMetadataItemsQuery =
                   "label": "Email",
                   "value": "EMAIL",
                   "position": 0
-                },
-                {
-                  "id": "20202020-fb11-4da3-80fd-b291cda8deb1",
-                  "color": "blue",
-                  "label": "SMS",
-                  "value": "SMS",
-                  "position": 1
                 }
               ],
               "settings": null,

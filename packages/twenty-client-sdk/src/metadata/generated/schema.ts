@@ -2738,7 +2738,7 @@ export interface MessageChannel {
 
 export type MessageChannelVisibility = 'METADATA' | 'SUBJECT' | 'SHARE_EVERYTHING'
 
-export type MessageChannelType = 'EMAIL' | 'SMS'
+export type MessageChannelType = 'EMAIL'
 
 export type MessageChannelContactAutoCreationPolicy = 'SENT_AND_RECEIVED' | 'SENT' | 'NONE'
 
@@ -9734,8 +9734,7 @@ export const enumMessageChannelVisibility = {
 }
 
 export const enumMessageChannelType = {
-   EMAIL: 'EMAIL' as const,
-   SMS: 'SMS' as const
+   EMAIL: 'EMAIL' as const
 }
 
 export const enumMessageChannelContactAutoCreationPolicy = {
