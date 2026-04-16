@@ -3025,7 +3025,6 @@ enum MessageChannelVisibility {
 
 enum MessageChannelType {
   EMAIL
-  SMS
 }
 
 enum MessageChannelContactAutoCreationPolicy {
