@@ -27,7 +27,10 @@ const bootstrap = async () => {
   setPgDateTypeParser();
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
+    cors: {
+      origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+      credentials: true,
+    },
     bufferLogs: process.env.LOGGER_IS_BUFFER_ENABLED === 'true',
     rawBody: true,
     snapshot: process.env.NODE_ENV === NodeEnvironment.DEVELOPMENT,
@@ -52,6 +55,8 @@ const bootstrap = async () => {
   app.useLogger(logger);
 
   app.useGlobalFilters(new UnhandledExceptionFilter());
+
+  app.disable('x-powered-by');
 
   app.useBodyParser('json', { limit: settings.storage.maxFileSize });
   app.useBodyParser('urlencoded', {

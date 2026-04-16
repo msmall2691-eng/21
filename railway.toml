@@ -1,2 +1,10 @@
 [build]
+builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "yarn workspace twenty-server start:prod"
+healthcheckPath = "/healthz"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
