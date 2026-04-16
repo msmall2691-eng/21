@@ -16,6 +16,14 @@ export const SEARCH_FIELDS_FOR_JOB_VISIT: FieldTypeAndNameMetadata[] = [
   { name: NAME_FIELD_NAME, type: FieldMetadataType.TEXT },
 ];
 
+export type JobVisitStatus =
+  | 'SCHEDULED'
+  | 'EN_ROUTE'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'NO_SHOW';
+
 export class JobVisitWorkspaceEntity {
   id: string;
   createdAt: string;
@@ -25,7 +33,7 @@ export class JobVisitWorkspaceEntity {
   name: string | null;
   scheduledDate: string | null;
   completedDate: string | null;
-  status: string | null;
+  status: JobVisitStatus | null;
   duration: number | null;
   notes: string | null;
   checklistCompleted: boolean;
