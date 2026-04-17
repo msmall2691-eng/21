@@ -27,10 +27,7 @@ const bootstrap = async () => {
   setPgDateTypeParser();
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: {
-      origin: process.env.FRONTEND_URL || 'http://localhost:3001',
-      credentials: true,
-    },
+    cors: true,
     bufferLogs: process.env.LOGGER_IS_BUFFER_ENABLED === 'true',
     rawBody: true,
     snapshot: process.env.NODE_ENV === NodeEnvironment.DEVELOPMENT,
