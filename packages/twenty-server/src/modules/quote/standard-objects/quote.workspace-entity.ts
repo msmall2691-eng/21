@@ -7,10 +7,11 @@ import {
 import { BaseWorkspaceEntity } from 'src/engine/twenty-orm/base.workspace-entity';
 import { type FieldTypeAndNameMetadata } from 'src/engine/workspace-manager/utils/get-ts-vector-column-expression.util';
 import { type EntityRelation } from 'src/engine/workspace-manager/workspace-migration/types/entity-relation.interface';
-import { type CompanyWorkspaceEntity } from 'src/modules/company/standard-objects/company.workspace-entity';
 import { type AttachmentWorkspaceEntity } from 'src/modules/attachment/standard-objects/attachment.workspace-entity';
+import { type CompanyWorkspaceEntity } from 'src/modules/company/standard-objects/company.workspace-entity';
 import { type OpportunityWorkspaceEntity } from 'src/modules/opportunity/standard-objects/opportunity.workspace-entity';
 import { type PersonWorkspaceEntity } from 'src/modules/person/standard-objects/person.workspace-entity';
+import { type QuoteRequestWorkspaceEntity } from 'src/modules/quote-request/standard-objects/quote-request.workspace-entity';
 import { type TimelineActivityWorkspaceEntity } from 'src/modules/timeline/standard-objects/timeline-activity.workspace-entity';
 
 const NAME_FIELD_NAME = 'quoteNumber';
@@ -83,6 +84,11 @@ export class QuoteWorkspaceEntity extends BaseWorkspaceEntity {
   companyId: string | null;
   opportunity: EntityRelation<OpportunityWorkspaceEntity>;
   opportunityId: string;
+
+  // Link to originating quote request (intake form submission)
+  quoteRequest: EntityRelation<QuoteRequestWorkspaceEntity> | null;
+  quoteRequestId: string | null;
+
   attachments: EntityRelation<AttachmentWorkspaceEntity[]>;
   timelineActivities: EntityRelation<TimelineActivityWorkspaceEntity[]>;
 }

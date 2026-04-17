@@ -8,6 +8,7 @@ import { type FieldTypeAndNameMetadata } from 'src/engine/workspace-manager/util
 import { type EntityRelation } from 'src/engine/workspace-manager/workspace-migration/types/entity-relation.interface';
 import { type PersonWorkspaceEntity } from 'src/modules/person/standard-objects/person.workspace-entity';
 import { type PropertyWorkspaceEntity } from 'src/modules/property/standard-objects/property.workspace-entity';
+import { type QuoteWorkspaceEntity } from 'src/modules/quote/standard-objects/quote.workspace-entity';
 
 const NAME_FIELD_NAME = 'name';
 
@@ -38,4 +39,8 @@ export class QuoteRequestWorkspaceEntity {
   propertyId: string | null;
   person: EntityRelation<PersonWorkspaceEntity> | null;
   personId: string | null;
+
+  // Link to the Quote generated from this request
+  quote: EntityRelation<QuoteWorkspaceEntity> | null;
+  quoteId: string | null;
 }

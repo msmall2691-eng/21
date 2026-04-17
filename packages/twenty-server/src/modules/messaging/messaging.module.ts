@@ -6,6 +6,10 @@ import { MessagingImportManagerModule } from 'src/modules/messaging/message-impo
 import { MessageParticipantManagerModule } from 'src/modules/messaging/message-participant-manager/message-participant-manager.module';
 import { MessagingMonitoringModule } from 'src/modules/messaging/monitoring/messaging-monitoring.module';
 
+// SmsManagerModule removed - has broken imports to non-existent engine paths
+// (src/engine/decorators/auth/auth-context.decorator does not exist in Twenty v1.21)
+// Re-add once SMS feature imports are fixed
+
 @Module({
   imports: [
     MessagingImportManagerModule,

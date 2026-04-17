@@ -70,6 +70,9 @@ export enum SettingsPath {
   AdminPanelAiProviderDetail = 'admin-panel/ai/providers/:providerName',
   AdminPanelNewAiModel = 'admin-panel/ai/providers/:providerName/new-model',
 
+  Calendar = 'calendar',
+  CalendarStrProperties = 'calendar/str-properties',
+
   Roles = 'roles',
   RoleCreate = 'roles/create',
   RoleDetail = 'roles/:roleId',
