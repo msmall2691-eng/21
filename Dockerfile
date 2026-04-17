@@ -30,6 +30,7 @@ COPY ./packages/twenty-cli/package.json /app/packages/twenty-cli/
 COPY ./packages/create-twenty-app/package.json /app/packages/create-twenty-app/
 COPY ./packages/twenty-oxlint-rules/package.json /app/packages/twenty-oxlint-rules/
 COPY ./packages/twenty-companion/package.json /app/packages/twenty-companion/
+COPY ./packages/twenty-apps/package.json /app/packages/twenty-apps/
 
 RUN yarn && yarn cache clean && npx nx reset
 
