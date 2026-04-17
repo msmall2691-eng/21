@@ -8,7 +8,7 @@ import {
   IconClock,
   IconSearch,
   IconFilter,
-} from 'twenty-ui';
+} from 'twenty-ui/display';
 
 const MessagingContainer = styled.div`
   display: flex;
