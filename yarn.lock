@@ -12694,32 +12694,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/bull-shared@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "@nestjs/bull-shared@npm:11.0.4"
-  dependencies:
-    tslib: "npm:2.8.1"
-  peerDependencies:
-    "@nestjs/common": ^10.0.0 || ^11.0.0
-    "@nestjs/core": ^10.0.0 || ^11.0.0
-  checksum: 10c0/88b819fa8e24033f41b9764712ebe130b1c6b78c9dfecbda1dbdf6c97f9f63a70fd0eb1cde870d2839590f8c712612c3d46ed30732361afe066c93bf320834fd
-  languageName: node
-  linkType: hard
-
-"@nestjs/bull@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "@nestjs/bull@npm:11.0.4"
-  dependencies:
-    "@nestjs/bull-shared": "npm:^11.0.4"
-    tslib: "npm:2.8.1"
-  peerDependencies:
-    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-    bull: ^3.3 || ^4.0.0
-  checksum: 10c0/ddc9edc5e50a2bb222de3b47f5cbd056d520f916f7ebc9b994c2aef491358297533c6cdec351bff6910ee30442fd835d4608b01400303a1754eab60df6269b34
-  languageName: node
-  linkType: hard
-
 "@nestjs/cache-manager@npm:^2.3.0":
   version: 2.3.0
   resolution: "@nestjs/cache-manager@npm:2.3.0"
@@ -28429,17 +28403,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:^0.8.10, @xmldom/xmldom@npm:^0.8.5":
-  version: 0.8.10
-  resolution: "@xmldom/xmldom@npm:0.8.10"
-  checksum: 10c0/c7647c442502720182b0d65b17d45d2d95317c1c8c497626fe524bda79b4fb768a9aa4fae2da919f308e7abcff7d67c058b102a9d641097e9a57f0b80187851f
-  languageName: node
-  linkType: hard
-
-"@xmldom/xmldom@npm:^0.8.8":
-  version: 0.8.11
-  resolution: "@xmldom/xmldom@npm:0.8.11"
-  checksum: 10c0/e768623de72c95d3dae6b5da8e33dda0d81665047811b5498d23a328d45b13feb5536fe921d0308b96a4a8dd8addf80b1f6ef466508051c0b581e63e0dc74ed5
+"@xmldom/xmldom@npm:^0.8.10, @xmldom/xmldom@npm:^0.8.5, @xmldom/xmldom@npm:^0.8.8":
+  version: 0.8.13
+  resolution: "@xmldom/xmldom@npm:0.8.13"
+  checksum: 10c0/06405ee6fffba631abf715a305ace338420ebcea8baf1317f19f2752f5c505952b7df45159908e7be8451a42faa54326b780616ab4d08242b20477b2973da24b
   languageName: node
   linkType: hard
 
@@ -60390,6 +60357,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"twenty-apps@workspace:packages/twenty-apps":
+  version: 0.0.0-use.local
+  resolution: "twenty-apps@workspace:packages/twenty-apps"
+  languageName: unknown
+  linkType: soft
+
 "twenty-cli@workspace:packages/twenty-cli":
   version: 0.0.0-use.local
   resolution: "twenty-cli@workspace:packages/twenty-cli"
@@ -60734,7 +60707,6 @@ __metadata:
     "@microsoft/microsoft-graph-client": "npm:3.0.7"
     "@microsoft/microsoft-graph-types": "npm:^2.40.0"
     "@nestjs/axios": "npm:3.1.2"
-    "@nestjs/bull": "npm:^11.0.4"
     "@nestjs/cache-manager": "npm:^2.3.0"
     "@nestjs/cli": "npm:^11.0.16"
     "@nestjs/common": "npm:11.1.16"
