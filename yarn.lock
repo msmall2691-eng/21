@@ -12694,32 +12694,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/bull-shared@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "@nestjs/bull-shared@npm:11.0.4"
-  dependencies:
-    tslib: "npm:2.8.1"
-  peerDependencies:
-    "@nestjs/common": ^10.0.0 || ^11.0.0
-    "@nestjs/core": ^10.0.0 || ^11.0.0
-  checksum: 10c0/88b819fa8e24033f41b9764712ebe130b1c6b78c9dfecbda1dbdf6c97f9f63a70fd0eb1cde870d2839590f8c712612c3d46ed30732361afe066c93bf320834fd
-  languageName: node
-  linkType: hard
-
-"@nestjs/bull@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "@nestjs/bull@npm:11.0.4"
-  dependencies:
-    "@nestjs/bull-shared": "npm:^11.0.4"
-    tslib: "npm:2.8.1"
-  peerDependencies:
-    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-    bull: ^3.3 || ^4.0.0
-  checksum: 10c0/ddc9edc5e50a2bb222de3b47f5cbd056d520f916f7ebc9b994c2aef491358297533c6cdec351bff6910ee30442fd835d4608b01400303a1754eab60df6269b34
-  languageName: node
-  linkType: hard
-
 "@nestjs/cache-manager@npm:^2.3.0":
   version: 2.3.0
   resolution: "@nestjs/cache-manager@npm:2.3.0"
@@ -30889,36 +30863,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.12.0, axios@npm:^1.13.5, axios@npm:^1.6.1, axios@npm:^1.7.7, axios@npm:^1.8.3":
-  version: 1.13.5
-  resolution: "axios@npm:1.13.5"
+"axios@npm:^1.12.0, axios@npm:^1.13.5, axios@npm:^1.14.0, axios@npm:^1.6.1, axios@npm:^1.7.7, axios@npm:^1.8.3, axios@npm:^1.9.0":
+  version: 1.16.0
+  resolution: "axios@npm:1.16.0"
   dependencies:
-    follow-redirects: "npm:^1.15.11"
-    form-data: "npm:^4.0.5"
-    proxy-from-env: "npm:^1.1.0"
-  checksum: 10c0/abf468c34f2d145f3dc7dbc0f1be67e520630624307bda69a41bbe8d386bd672d87b4405c4ee77f9ff54b235ab02f96a9968fb00e75b13ce64706e352a3068fd
-  languageName: node
-  linkType: hard
-
-"axios@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "axios@npm:1.14.0"
-  dependencies:
-    follow-redirects: "npm:^1.15.11"
+    follow-redirects: "npm:^1.16.0"
     form-data: "npm:^4.0.5"
     proxy-from-env: "npm:^2.1.0"
-  checksum: 10c0/2541f4aa215a7d1842429dad006fc682d82bc0e74bd14500823f7d8cce3bbae0e0a8c328c8538946718f366ab8ce5a4c12e9ad40e5a0f3482ff8bff0cd115d45
-  languageName: node
-  linkType: hard
-
-"axios@npm:^1.9.0":
-  version: 1.13.6
-  resolution: "axios@npm:1.13.6"
-  dependencies:
-    follow-redirects: "npm:^1.15.11"
-    form-data: "npm:^4.0.5"
-    proxy-from-env: "npm:^1.1.0"
-  checksum: 10c0/51fb5af055c3b85662fa97df17d986ae2c37d13bf86d50b6bb36b6b3a2dec6966a1d3a14ab3774b71707b155ae3597ed9b7babdf1a1a863d1a31840cb8e7ec71
+  checksum: 10c0/1c91a5221b77b76072026b4cc95ecdf38f7c3e33e63423abec09a85e6e9a12279637dcc9ac2ba1fc333e0c447fb3b0f46d7965acb5d7cea02d188e9c6d425c0b
   languageName: node
   linkType: hard
 
@@ -39218,13 +39170,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.11":
-  version: 1.15.11
-  resolution: "follow-redirects@npm:1.15.11"
+"follow-redirects@npm:^1.16.0":
+  version: 1.16.0
+  resolution: "follow-redirects@npm:1.16.0"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: 10c0/d301f430542520a54058d4aeeb453233c564aaccac835d29d15e050beb33f339ad67d9bddbce01739c5dc46a6716dbe3d9d0d5134b1ca203effa11a7ef092343
+  checksum: 10c0/a1e2900163e6f1b4d1ed5c221b607f41decbab65534c63fe7e287e40a5d552a6496e7d9d7d976fa4ba77b4c51c11e5e9f683f10b43011ea11e442ff128d0e181
   languageName: node
   linkType: hard
 
@@ -60390,6 +60342,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"twenty-apps@workspace:packages/twenty-apps":
+  version: 0.0.0-use.local
+  resolution: "twenty-apps@workspace:packages/twenty-apps"
+  languageName: unknown
+  linkType: soft
+
 "twenty-cli@workspace:packages/twenty-cli":
   version: 0.0.0-use.local
   resolution: "twenty-cli@workspace:packages/twenty-cli"
@@ -60734,7 +60692,6 @@ __metadata:
     "@microsoft/microsoft-graph-client": "npm:3.0.7"
     "@microsoft/microsoft-graph-types": "npm:^2.40.0"
     "@nestjs/axios": "npm:3.1.2"
-    "@nestjs/bull": "npm:^11.0.4"
     "@nestjs/cache-manager": "npm:^2.3.0"
     "@nestjs/cli": "npm:^11.0.16"
     "@nestjs/common": "npm:11.1.16"
