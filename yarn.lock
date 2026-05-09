@@ -2134,6 +2134,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-module-transforms@npm:^7.28.6":
+  version: 7.28.6
+  resolution: "@babel/helper-module-transforms@npm:7.28.6"
+  dependencies:
+    "@babel/helper-module-imports": "npm:^7.28.6"
+    "@babel/helper-validator-identifier": "npm:^7.28.5"
+    "@babel/traverse": "npm:^7.28.6"
+  peerDependencies:
+    "@babel/core": ^7.0.0
+  checksum: 10c0/6f03e14fc30b287ce0b839474b5f271e72837d0cafe6b172d759184d998fbee3903a035e81e07c2c596449e504f453463d58baa65b6f40a37ded5bec74620b2b
+  languageName: node
+  linkType: hard
+
 "@babel/helper-optimise-call-expression@npm:^7.25.9":
   version: 7.25.9
   resolution: "@babel/helper-optimise-call-expression@npm:7.25.9"
@@ -2200,7 +2213,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-validator-identifier@npm:^7.25.9, @babel/helper-validator-identifier@npm:^7.27.1":
+"@babel/helper-validator-identifier@npm:^7.27.1":
   version: 7.27.1
   resolution: "@babel/helper-validator-identifier@npm:7.27.1"
   checksum: 10c0/c558f11c4871d526498e49d07a84752d1800bf72ac0d3dad100309a2eaba24efbf56ea59af5137ff15e3a00280ebe588560534b0e894a4750f8b1411d8f78b84
@@ -2957,16 +2970,16 @@ __metadata:
   linkType: hard
 
 "@babel/plugin-transform-modules-systemjs@npm:^7.25.9":
-  version: 7.25.9
-  resolution: "@babel/plugin-transform-modules-systemjs@npm:7.25.9"
+  version: 7.29.4
+  resolution: "@babel/plugin-transform-modules-systemjs@npm:7.29.4"
   dependencies:
-    "@babel/helper-module-transforms": "npm:^7.25.9"
-    "@babel/helper-plugin-utils": "npm:^7.25.9"
-    "@babel/helper-validator-identifier": "npm:^7.25.9"
-    "@babel/traverse": "npm:^7.25.9"
+    "@babel/helper-module-transforms": "npm:^7.28.6"
+    "@babel/helper-plugin-utils": "npm:^7.28.6"
+    "@babel/helper-validator-identifier": "npm:^7.28.5"
+    "@babel/traverse": "npm:^7.29.0"
   peerDependencies:
     "@babel/core": ^7.0.0-0
-  checksum: 10c0/8299e3437542129c2684b86f98408c690df27db4122a79edded4782cf04e755d6ecb05b1e812c81a34224a81e664303392d5f3c36f3d2d51fdc99bb91c881e9a
+  checksum: 10c0/1da94f89ef8ba1aa1501136a80eb4c010c6a19f5550e10db84677b3ccb7a4934c8098f2b5134def87cf513bf05747ffa523d33722a1ea5a5c8ef956e9136c4c2
   languageName: node
   linkType: hard
 
@@ -3610,7 +3623,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.28.6":
+"@babel/traverse@npm:^7.28.6, @babel/traverse@npm:^7.29.0":
   version: 7.29.0
   resolution: "@babel/traverse@npm:7.29.0"
   dependencies:
@@ -12691,32 +12704,6 @@ __metadata:
     axios: ^1.3.1
     rxjs: ^6.0.0 || ^7.0.0
   checksum: 10c0/cf81e64cb991a743a2fb88ffd285b571f2c17ec22e10e4f7e3dd16b1945f2c1101d46c51f13ac42f44a9133257f66980e041fadb7c24a9a23352dc60515d6127
-  languageName: node
-  linkType: hard
-
-"@nestjs/bull-shared@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "@nestjs/bull-shared@npm:11.0.4"
-  dependencies:
-    tslib: "npm:2.8.1"
-  peerDependencies:
-    "@nestjs/common": ^10.0.0 || ^11.0.0
-    "@nestjs/core": ^10.0.0 || ^11.0.0
-  checksum: 10c0/88b819fa8e24033f41b9764712ebe130b1c6b78c9dfecbda1dbdf6c97f9f63a70fd0eb1cde870d2839590f8c712612c3d46ed30732361afe066c93bf320834fd
-  languageName: node
-  linkType: hard
-
-"@nestjs/bull@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "@nestjs/bull@npm:11.0.4"
-  dependencies:
-    "@nestjs/bull-shared": "npm:^11.0.4"
-    tslib: "npm:2.8.1"
-  peerDependencies:
-    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-    bull: ^3.3 || ^4.0.0
-  checksum: 10c0/ddc9edc5e50a2bb222de3b47f5cbd056d520f916f7ebc9b994c2aef491358297533c6cdec351bff6910ee30442fd835d4608b01400303a1754eab60df6269b34
   languageName: node
   linkType: hard
 
@@ -60390,6 +60377,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"twenty-apps@workspace:packages/twenty-apps":
+  version: 0.0.0-use.local
+  resolution: "twenty-apps@workspace:packages/twenty-apps"
+  languageName: unknown
+  linkType: soft
+
 "twenty-cli@workspace:packages/twenty-cli":
   version: 0.0.0-use.local
   resolution: "twenty-cli@workspace:packages/twenty-cli"
@@ -60734,7 +60727,6 @@ __metadata:
     "@microsoft/microsoft-graph-client": "npm:3.0.7"
     "@microsoft/microsoft-graph-types": "npm:^2.40.0"
     "@nestjs/axios": "npm:3.1.2"
-    "@nestjs/bull": "npm:^11.0.4"
     "@nestjs/cache-manager": "npm:^2.3.0"
     "@nestjs/cli": "npm:^11.0.16"
     "@nestjs/common": "npm:11.1.16"
